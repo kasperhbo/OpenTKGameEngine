@@ -17,15 +17,14 @@ namespace MarioGabeKasper.Engine
     {
         protected readonly List<GameObject> GameObjects = new();
         private bool _isRunning;
-        protected Renderer.Renderer _renderer = new();
-        protected Camera s_camera;
-        protected GameObject p_activeGameObject = null;
-        protected bool p_loadedScene = false;
-        protected Window p_window;
+        protected Renderer.Renderer Renderer = new();
+        protected Camera SCamera;
+        protected GameObject PActiveGameObject = null;
 
         public virtual void Init(Window window)
-        {
-            p_window = window;
+        { 
+
+            
             // p_mouseListener = mouseListener;
         }
 
@@ -34,7 +33,7 @@ namespace MarioGabeKasper.Engine
             foreach (var go in GameObjects)
             {
                 go.Start();
-                _renderer.Add(go, s_camera);
+                Renderer.Add(go, SCamera);
             }
             
             _isRunning = true;
@@ -50,7 +49,7 @@ namespace MarioGabeKasper.Engine
 
             GameObjects.Add(go);
             go.Start();
-            _renderer.Add(go, s_camera);
+            Renderer.Add(go, SCamera);
         }
 
         public abstract void Update(float dt, MouseState mouseState, KeyboardState keyboardState);
@@ -59,11 +58,11 @@ namespace MarioGabeKasper.Engine
         public virtual void SceneImGui(ImGuiController imGuiController)
         {
             //Create Inspector for the currently gameobject
-            if(p_activeGameObject != null)
+            if(PActiveGameObject != null)
             {
                 ImGuiNET.ImGui.Begin("Inspector");
 
-                p_activeGameObject.ImGui();
+                PActiveGameObject.ImGui_();
 
                 ImGuiNET.ImGui.End();
             }
@@ -84,8 +83,8 @@ namespace MarioGabeKasper.Engine
             {
                 List<GameObject> objs = JsonConvert.DeserializeObject<List<GameObject>>(File.ReadAllText("../../../data.json"));
 
-                int maxGOID = -1;
-                int maxCompID = -1;
+                int maxGoid = -1;
+                int maxCompId = -1;
                 
                 for (int i = 0; i < objs.Count; i++)
                 {
@@ -93,81 +92,78 @@ namespace MarioGabeKasper.Engine
 
                     foreach (Component c in objs[i].GetAllComponent())
                     {
-                        if (c.GetUID() > maxCompID)
+                        if (c.Uid > maxCompId)
                         {
-                            maxCompID = c.GetUID();
+                            maxCompId = c.Uid;
                         }
                     }
 
-                    if (objs[i].GetUID() > maxGOID)
+                    if (objs[i].GetUid() > maxGoid)
                     {
-                        maxGOID = objs[i].GetUID();
+                        maxGoid = objs[i].GetUid();
                     }
                 }
 
-                maxGOID++;
-                maxCompID++;
+                maxGoid++;
+                maxCompId++;
                 
-                GameObject.Init(maxGOID);
-                Component.Init(maxCompID);
-
-                p_loadedScene = true;
+                GameObject.Init(maxGoid);
+                Component.Init(maxCompId);
             }
         }
 
-        public void Save()
+        public void SaveScene()
         {
-            string json = JsonConvert.SerializeObject(GameObjects.ToArray());
-            File.WriteAllText("../../../data.json", json);
+            string sceneData = JsonConvert.SerializeObject(GameObjects.ToArray());
+            File.WriteAllText("../../../data.json", sceneData);
         }
-
         public Camera GetCamera()
         {
-            return s_camera;
+            return SCamera;
         }
 
-        protected MouseState _mouseState;
+        protected MouseState MouseState;
         
         public int GetCurrentMouseDown()
         {
             int buttonNum = -1;
 
-            if (_mouseState.IsButtonDown(MouseButton.Button1))
+            if (MouseState.IsButtonDown(MouseButton.Button1))
             {
                 buttonNum = 0;
             }
         
-            if (_mouseState.IsButtonDown(MouseButton.Button2))
+            if (MouseState.IsButtonDown(MouseButton.Button2))
             {
                 buttonNum = 1;
             }
         
-            if (_mouseState.IsButtonDown(MouseButton.Button3))
+            if (MouseState.IsButtonDown(MouseButton.Button3))
             {
                 buttonNum = 2;
             }
         
-            if (_mouseState.IsButtonDown(MouseButton.Button4))
+            if (MouseState.IsButtonDown(MouseButton.Button4))
             {
                 buttonNum = 3;
             }
         
-            if (_mouseState.IsButtonDown(MouseButton.Button5))
+            if (MouseState.IsButtonDown(MouseButton.Button5))
             {
                 buttonNum = 4;
             }
         
-            if (_mouseState.IsButtonDown(MouseButton.Button6))
+            if (MouseState.IsButtonDown(MouseButton.Button6))
             {
                 buttonNum = 5;
             }
         
-            if (_mouseState.IsButtonDown(MouseButton.Button7))
+            if (MouseState.IsButtonDown(MouseButton.Button7))
             {
                 buttonNum = 6;
             }
         
-            if (_mouseState.IsButtonDown(MouseButton.Button8))
+            if (MouseState.IsButtonDown(MouseButton.Button8))
             {
                 buttonNum = 7;
             }

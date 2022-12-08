@@ -2,33 +2,35 @@
 using System.Numerics;
 using MarioGabeKasper.Engine.Core;
 using MarioGabeKasper.Engine.Renderer;
+using MarioGabeKasper.Engine.Utils;
 using Vector2 = OpenTK.Mathematics.Vector2;
 
 namespace MarioGabeKasper.Engine.Components
 {
     public class GridLines : Component
     {
-        public override void update(float dt)
+        public override void Update(float dt)
         {
-            Vector2 cameraPos = Window.GetScene().GetCamera().position;
+            Vector2 cameraPos = Math.DefaultToOpenTk(Window.GetScene().GetCamera().Transform.Position);
             Vector2 projectionSize = new Vector2(Window.GetScene().GetCamera().GetProjectSize().X,Window.GetScene().GetCamera().GetProjectSize().Y);
 
-            int firstX = ((int)(cameraPos.X / Settings.GridWidth)- 1) * Settings.GridWidth;
-            int firstY = ((int)(cameraPos.Y / Settings.GridHeight) -1) * Settings.GridHeight;
+            float firstX = (((cameraPos.X / Window.Get().Settings.GridSize.X) - 1) * Window.Get().Settings.GridSize.X);
+            
+            float firstY = (((cameraPos.Y / Window.Get().Settings.GridSize.Y) -1) * Window.Get().Settings.GridSize.Y);
 
-            int numVerticalLines = (int)(projectionSize.X / Settings.GridWidth) + 2;
-            int numHorizontalLines = (int)(projectionSize.Y / Settings.GridHeight) + 2;
+            int numVerticalLines = (int)(projectionSize.X / Window.Get().Settings.GridSize.X) + 2;
+            int numHorizontalLines = (int)(projectionSize.Y / Window.Get().Settings.GridSize.Y) + 2;
 
-            int height = (int)projectionSize.Y + Settings.GridHeight * 2;
-            int width = (int)projectionSize.X + Settings.GridWidth * 2;
+            float width = projectionSize.X + Window.Get().Settings.GridSize.X * 2;
+            float height = projectionSize.Y + Window.Get().Settings.GridSize.Y * 2;
 
             int maxLines = numVerticalLines > numHorizontalLines ? numVerticalLines : numHorizontalLines;
             Vector3 color = new Vector3(1, 0, 0);
             
             for (int i = 0; i < maxLines; i++)
             {
-                int x = firstX + (Settings.GridWidth * i);
-                int y = firstY + (Settings.GridHeight * i);
+                float x = firstX + (Window.Get().Settings.GridSize.X * i);
+                float y = firstY + (Window.Get().Settings.GridSize.Y * i);
 
                 if (i < numVerticalLines)
                 {
@@ -41,12 +43,12 @@ namespace MarioGabeKasper.Engine.Components
                 }
             }
             
-            base.update(dt);
+            base.Update(dt);
         }
 
         public override void SetObjectType()
         {
-            objType = -1;
+            ObjType = -1;
         }
     }
 }

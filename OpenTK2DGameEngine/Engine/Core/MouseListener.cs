@@ -5,7 +5,7 @@ namespace MarioGabeKasper.Engine.Core
 {
     public class MouseListener
     {
-        private static MouseListener instance;
+        private static MouseListener _instance;
         private double scrollX, scrollY;
         private double xPos, yPos, lastY, lastX;
         private bool[] mouseButtonPressed = new bool[9];
@@ -23,15 +23,15 @@ namespace MarioGabeKasper.Engine.Core
 
         public static MouseListener Get()
         {
-            if (instance == null)
+            if (_instance == null)
             {
-                instance = new MouseListener();
+                _instance = new MouseListener();
             }
 
-            return instance;
+            return _instance;
         }
 
-        public static void mousePosCallback(double xpos, double ypos)
+        public static void MousePosCallback(double xpos, double ypos)
         {
             Get().lastX = Get().xPos;
             Get().lastY = Get().yPos;
@@ -41,7 +41,7 @@ namespace MarioGabeKasper.Engine.Core
         }
 
 
-        public static void mouseButtonCallback(int button, MouseState mouseState)
+        public static void MouseButtonCallback(int button, MouseState mouseState)
         {
             // MouseState mouseState = Window.GetMouseState();
 
@@ -72,12 +72,12 @@ namespace MarioGabeKasper.Engine.Core
             Get().scrollY = yOffset;
         }
 
-        public static float getX()
+        public static float GetX()
         {
             return (float)Get().xPos;
         }
 
-        public static float getY()
+        public static float GetY()
         {
             return (float)Get().yPos;
         }
@@ -86,7 +86,7 @@ namespace MarioGabeKasper.Engine.Core
         {
             // MouseState mouseState = Window.GetMouseState();
 
-            float currentX = getX();
+            float currentX = GetX();
 
             currentX = currentX / Window.GetSizeX() * 2f - 1f;
 
@@ -100,7 +100,7 @@ namespace MarioGabeKasper.Engine.Core
 
         public static float GetOrthoY()
         {
-            float currentY = Window.GetSizeY() - getY();
+            float currentY = Window.GetSizeY() - GetY();
 
             currentY = currentY / Window.GetSizeY() * 2f - 1f;
 
@@ -112,22 +112,22 @@ namespace MarioGabeKasper.Engine.Core
             return currentY;
         }
 
-        public static float getDx()
+        public static float GetDx()
         {
             return (float)(Get().lastX - Get().xPos);
         }
 
-        public static float getDy()
+        public static float GetDy()
         {
             return (float)(Get().lastY - Get().yPos);
         }
 
-        public static float getScrollX()
+        public static float GetScrollX()
         {
             return (float)Get().scrollX;
         }
 
-        public static float getScrollY()
+        public static float GetScrollY()
         {
             return (float)Get().scrollY;
         }
@@ -137,7 +137,7 @@ namespace MarioGabeKasper.Engine.Core
             return Get().isDragging;
         }
 
-        public static bool mouseButtonDown(int button)
+        public static bool MouseButtonDown(int button)
         {
             if (button < Get().mouseButtonPressed.Length && button != -1)
             {

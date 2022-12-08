@@ -26,7 +26,7 @@ namespace MarioGabeKasper.Engine.Serializers
 
     public class ComponentSerializer : JsonConverter
     {
-        static JsonSerializerSettings SpecifiedSubclassConversion =
+        static JsonSerializerSettings _specifiedSubclassConversion =
             new JsonSerializerSettings()
             {
                 ContractResolver = new BaseSpecifiedConcreteClassConverter()
@@ -41,20 +41,20 @@ namespace MarioGabeKasper.Engine.Serializers
         {
             JObject jo = JObject.Load(reader);
 
-            switch (jo["objType"].Value<int>())
+            switch (jo["ObjType"].Value<int>())
             {
                 case -1:
                     return null;
                 case 1:
-                    return JsonConvert.DeserializeObject<FontRenderer>(jo.ToString(), SpecifiedSubclassConversion);
+                    return JsonConvert.DeserializeObject<FontRenderer>(jo.ToString(), _specifiedSubclassConversion);
                 case 2:
-                    return JsonConvert.DeserializeObject<SpriteRenderer>(jo.ToString(), SpecifiedSubclassConversion);
+                    return JsonConvert.DeserializeObject<SpriteRenderer>(jo.ToString(), _specifiedSubclassConversion);
                 case 3:
-                    return JsonConvert.DeserializeObject<Rigidbody>(jo.ToString(), SpecifiedSubclassConversion);
+                    return JsonConvert.DeserializeObject<Rigidbody>(jo.ToString(), _specifiedSubclassConversion);
                 case 4:
-                    return JsonConvert.DeserializeObject<Texture>(jo.ToString(), SpecifiedSubclassConversion);
+                    return JsonConvert.DeserializeObject<Texture>(jo.ToString(), _specifiedSubclassConversion);
                 case 5:
-                    return JsonConvert.DeserializeObject<GameObject>(jo.ToString(), SpecifiedSubclassConversion);
+                    return JsonConvert.DeserializeObject<GameObject>(jo.ToString(), _specifiedSubclassConversion);
                 default:
                     throw new Exception();
             }

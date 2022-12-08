@@ -29,7 +29,7 @@ namespace MarioGabeKasper.Engine.Renderer
             foreach (var batch in batches)
                 if (batch.HasRoom && batch.GetZIndex() == spr.GetGameObject().GetZIndex())
                 {
-                    var tex = spr.GetTexture();
+                    var tex = spr.Texture;
                     if (tex == null || batch.HasTexture(tex) || batch.HasTextureRoom())
                     {
                         batch.AddSprite(spr);

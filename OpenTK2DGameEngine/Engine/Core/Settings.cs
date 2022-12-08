@@ -1,4 +1,6 @@
-﻿namespace MarioGabeKasper.Engine.Core
+﻿using System.Numerics;
+
+namespace MarioGabeKasper.Engine.Core
 {
     public class Settings
     {
@@ -12,8 +14,20 @@
         /// <summary>
         /// GRID
         /// </summary>
-        public static int GridWidth = 32;
-        public static int GridHeight = 32;
+        // public int GridWidth = 32;
+        // public int GridHeight = 32;
+        public Vector2 GridSize = new Vector2(32,32);
+        
+        
+        /// <summary>
+        /// Asset window
+        /// </summary>
+        public float AssetZoomSize = 1;
+        
+        /// <summary>
+        /// Scene Camera
+        /// </summary>
+        public float SceneCameraSpeedMultiplier = 1;
 
     }
 }

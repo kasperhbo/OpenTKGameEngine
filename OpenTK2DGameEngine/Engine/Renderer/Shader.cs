@@ -11,7 +11,7 @@ namespace MarioGabeKasper.Engine.Renderer
 
         private readonly string vertexSource;
         private string filepath;
-        private int shaderProgramID;
+        private int shaderProgramId;
 
         public Shader(string vertexFilePath, string fragmentFilePath)
         {
@@ -25,124 +25,124 @@ namespace MarioGabeKasper.Engine.Renderer
             fragmentSource = fragmentFilePath;
         }
 
-        public void compile()
+        public void Compile()
         {
-            int vertexID, fragmentID;
+            int vertexId, fragmentId;
 
-            vertexID = GL.CreateShader(ShaderType.VertexShader);
-            GL.ShaderSource(vertexID, vertexSource);
-            GL.CompileShader(vertexID);
+            vertexId = GL.CreateShader(ShaderType.VertexShader);
+            GL.ShaderSource(vertexId, vertexSource);
+            GL.CompileShader(vertexId);
 
-            GL.GetShader(vertexID, ShaderParameter.CompileStatus, out var succes);
+            GL.GetShader(vertexId, ShaderParameter.CompileStatus, out var succes);
             if (succes != (int)All.True)
             {
                 // We can use `GL.GetShaderInfoLog(shader)` to get information about the error.
-                var infoLog = GL.GetShaderInfoLog(vertexID);
-                throw new Exception($"Error occurred whilst compiling Shader({vertexID}).\n\n{infoLog}");
+                var infoLog = GL.GetShaderInfoLog(vertexId);
+                throw new Exception($"Error occurred whilst compiling Shader({vertexId}).\n\n{infoLog}");
             }
 
-            fragmentID = GL.CreateShader(ShaderType.FragmentShader);
-            GL.ShaderSource(fragmentID, fragmentSource);
-            GL.CompileShader(fragmentID);
+            fragmentId = GL.CreateShader(ShaderType.FragmentShader);
+            GL.ShaderSource(fragmentId, fragmentSource);
+            GL.CompileShader(fragmentId);
 
-            GL.GetShader(fragmentID, ShaderParameter.CompileStatus, out succes);
+            GL.GetShader(fragmentId, ShaderParameter.CompileStatus, out succes);
             if (succes != (int)All.True)
             {
                 // We can use `GL.GetShaderInfoLog(shader)` to get information about the error.
-                var infoLog = GL.GetShaderInfoLog(fragmentID);
-                throw new Exception($"Error occurred whilst compiling Shader({fragmentID}).\n\n{infoLog}");
+                var infoLog = GL.GetShaderInfoLog(fragmentId);
+                throw new Exception($"Error occurred whilst compiling Shader({fragmentId}).\n\n{infoLog}");
             }
 
-            shaderProgramID = GL.CreateProgram();
-            GL.AttachShader(shaderProgramID, vertexID);
-            GL.AttachShader(shaderProgramID, fragmentID);
-            GL.LinkProgram(shaderProgramID);
+            shaderProgramId = GL.CreateProgram();
+            GL.AttachShader(shaderProgramId, vertexId);
+            GL.AttachShader(shaderProgramId, fragmentId);
+            GL.LinkProgram(shaderProgramId);
 
 #pragma warning disable CS0618 // Type or member is obsolete
-            GL.GetProgram(shaderProgramID, ProgramParameter.LinkStatus, out succes);
+            GL.GetProgram(shaderProgramId, ProgramParameter.LinkStatus, out succes);
 #pragma warning restore CS0618 // Type or member is obsolete
 
             if (succes != (int)All.True)
                 // We can use `GL.GetProgramInfoLog(program)` to get information about the error.
-                throw new Exception($"Error occurred whilst linking Program({shaderProgramID})");
+                throw new Exception($"Error occurred whilst linking Program({shaderProgramId})");
         }
 
-        public void use()
+        public void Use()
         {
-            GL.UseProgram(shaderProgramID);
+            GL.UseProgram(shaderProgramId);
         }
 
-        public void detach()
+        public void Detach()
         {
             GL.UseProgram(0);
         }
 
-        public void uploadMat4f(string varName, Matrix4 mat4)
+        public void UploadMat4F(string varName, Matrix4 mat4)
         {
-            use();
-            var varLocation = GL.GetUniformLocation(shaderProgramID, varName);
+            Use();
+            var varLocation = GL.GetUniformLocation(shaderProgramId, varName);
             GL.UniformMatrix4(varLocation, false, ref mat4);
         }
 
-        public void uploadMat3f(string varName, Matrix3 mat3)
+        public void UploadMat3F(string varName, Matrix3 mat3)
         {
-            use();
-            var varLocation = GL.GetUniformLocation(shaderProgramID, varName);
+            Use();
+            var varLocation = GL.GetUniformLocation(shaderProgramId, varName);
 
             GL.UniformMatrix3(varLocation, false, ref mat3);
         }
 
-        public void uploadVec4f(string varName, Vector4 vec)
+        public void UploadVec4F(string varName, Vector4 vec)
         {
-            use();
-            var varLocation = GL.GetUniformLocation(shaderProgramID, varName);
+            Use();
+            var varLocation = GL.GetUniformLocation(shaderProgramId, varName);
 
             GL.Uniform4(varLocation, vec);
         }
 
-        public void uploadVec3f(string varName, Vector3 vec)
+        public void UploadVec3F(string varName, Vector3 vec)
         {
-            use();
-            var varLocation = GL.GetUniformLocation(shaderProgramID, varName);
+            Use();
+            var varLocation = GL.GetUniformLocation(shaderProgramId, varName);
 
             GL.Uniform3(varLocation, vec);
         }
 
-        public void uploadVec2f(string varName, Vector2 vec)
+        public void UploadVec2F(string varName, Vector2 vec)
         {
-            use();
-            var varLocation = GL.GetUniformLocation(shaderProgramID, varName);
+            Use();
+            var varLocation = GL.GetUniformLocation(shaderProgramId, varName);
 
             GL.Uniform2(varLocation, vec);
         }
 
-        public void uploadFloat(string varName, float val)
+        public void UploadFloat(string varName, float val)
         {
-            use();
-            var varLocation = GL.GetUniformLocation(shaderProgramID, varName);
+            Use();
+            var varLocation = GL.GetUniformLocation(shaderProgramId, varName);
 
             GL.Uniform1(varLocation, val);
         }
 
-        public void uploadInt(string varName, int val)
+        public void UploadInt(string varName, int val)
         {
-            use();
-            var varLocation = GL.GetUniformLocation(shaderProgramID, varName);
+            Use();
+            var varLocation = GL.GetUniformLocation(shaderProgramId, varName);
 
             GL.Uniform1(varLocation, val);
         }
 
-        public void uploadIntArray(string varName, int[] data)
+        public void UploadIntArray(string varName, int[] data)
         {
-            use();
-            var varLocation = GL.GetUniformLocation(shaderProgramID, varName);
+            Use();
+            var varLocation = GL.GetUniformLocation(shaderProgramId, varName);
             GL.Uniform1(varLocation, data.Length, data);
         }
 
-        public void uploadTexture(string varName, int slot)
+        public void UploadTexture(string varName, int slot)
         {
-            use();
-            var varLocation = GL.GetUniformLocation(shaderProgramID, varName);
+            Use();
+            var varLocation = GL.GetUniformLocation(shaderProgramId, varName);
 
             GL.Uniform1(varLocation, slot);
         }

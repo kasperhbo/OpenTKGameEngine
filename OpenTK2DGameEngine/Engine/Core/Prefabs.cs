@@ -9,7 +9,7 @@ namespace MarioGabeKasper.Engine.Core
         {
             GameObject block = new GameObject("Sprite_Object_Gen", new Transform(new Vector2(), new Vector2(sizeX, sizeY)), 0);
             SpriteRenderer spriteRenderer = new SpriteRenderer();
-            spriteRenderer.SetSprite(sprite);
+            spriteRenderer.Sprite = sprite;
             block.AddComponent(spriteRenderer);
 
             return block;

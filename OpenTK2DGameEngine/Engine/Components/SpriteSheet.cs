@@ -7,7 +7,7 @@ namespace MarioGabeKasper.Engine.Components
     public class SpriteSheet
     {
         private Texture texture;
-        private List<Sprite> sprites;
+        public List<Sprite> sprites;
 
         public SpriteSheet(Texture texture, int spriteWidth, int spriteHeight, int numSprites, int spacing)
         {
@@ -34,10 +34,10 @@ namespace MarioGabeKasper.Engine.Components
                 };
                 Sprite sprite = new Sprite();
                 
-                sprite.SetTexture(this.texture);
-                sprite.SetTexCoords(texCoords);
-                sprite.SetWidth(spriteWidth);
-                sprite.SetHeight(spriteHeight);
+                sprite.Texture = this.texture;
+                sprite.TexCoords = texCoords;
+                sprite.Width = spriteWidth;
+                sprite.Height = spriteHeight;
                 
                 this.sprites.Add(sprite);
 
@@ -52,11 +52,6 @@ namespace MarioGabeKasper.Engine.Components
         public Sprite GetSprite(int index)
         {
             return this.sprites[index];
-        }
-
-        public int GetSize()
-        {
-            return this.sprites.Count;
         }
     }
 }

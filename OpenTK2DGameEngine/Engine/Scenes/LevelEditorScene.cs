@@ -1,10 +1,11 @@
 ﻿using System;
-
+using System.Reflection;
 using MarioGabeKasper.Engine.Components;
 using MarioGabeKasper.Engine.Components.Colliders;
 using MarioGabeKasper.Engine.Core;
 using MarioGabeKasper.Engine.GUI;
 using MarioGabeKasper.Engine.Utils;
+using OpenTK.Windowing.Desktop;
 using Window = MarioGabeKasper.Engine.Core.Window;
 
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -17,24 +18,21 @@ namespace MarioGabeKasper.Engine.Scenes
     public class LevelEditorScene : Scene
     {
         private SpriteSheet sprites;
-
         
         GameObject levelEditorStuff = new GameObject("level editor", new Transform(), 0);
         
         public override void Init(Window window)
         {
-
+            base.Init(window);
             LoadResources();
 
-            s_camera = new Camera(new Vector3(-250, 0, 0));
-
+            SCamera = new SceneCamera("Scene Camera", new Transform(
+                new Vector2(-250,0),new Vector2(0,0)));
+            
             sprites = AssetPool.GetSpriteSheet("decorationsandblocks.png");
             
             levelEditorStuff.AddComponent(new MouseControls());
             levelEditorStuff.AddComponent(new GridLines());
-
-
-            //p_activeGameObject = GameObjects[0];
         }
 
         /// <summary>
@@ -67,42 +65,52 @@ namespace MarioGabeKasper.Engine.Scenes
             
             foreach (var go in GameObjects) go.Update(dt);
 
-            _mouseState = mouseState;
+            MouseState = mouseState;
 
             UpdateMouseCallbacks(dt);
 
             if (input.IsKeyDown(Keys.Left))
             {
-                Window._currentScene.GetCamera().position.X -= 1 * dt;
+                Window.Get().CurrentScene.GetCamera().Transform.Position.X -= 1 * dt;
             }
 
             if (mouseState.IsButtonDown(MouseButton.Right))
             {
                 if(MouseListener.GetIsDragging())
                 {
-                    if (MouseListener.getDx() > 3)
+                    if (MouseListener.GetDx() > 3)
                     {
-                        Window._currentScene.GetCamera().position.X += 100 * dt;
+                        Window.Get().CurrentScene.GetCamera().Transform.Position.X += 100 * dt;
                     }
-                    if (MouseListener.getDx() < -3)
+                    if (MouseListener.GetDx() < -3)
                     {
-                        Window._currentScene.GetCamera().position.X -= 100 * dt;
+                        Window.Get().CurrentScene.GetCamera().Transform.Position.X -= 100 * dt;
                     }
-                    if (MouseListener.getDy() > 3)
+                    if (MouseListener.GetDy() > 3)
                     {
-                        Window._currentScene.GetCamera().position.Y += 100 * dt;
+                        Window.Get().CurrentScene.GetCamera().Transform.Position.Y += 100 * dt;
                     }
-                    if (MouseListener.getDy() < -3)
+                    if (MouseListener.GetDy() < -3)
                     {
-                        Window._currentScene.GetCamera().position.Y -= 100 * dt;
+                        Window.Get().CurrentScene.GetCamera().Transform.Position.Y -= 100 * dt;
+                    }
+                    
+                    //Make sure mouse pops at other side of the screen when reached the screen border
+                    if (MouseListener.GetX() >= Window.Get().ClientSize.X - 10)
+                    {
+                        Window.Get().MousePosition = new OpenTK.Mathematics.Vector2(0 + 11, Window.Get().MousePosition.Y);
+                    }
+                    if (MouseListener.GetX() <= 10)
+                    {
+                        Window.Get().MousePosition = new OpenTK.Mathematics.Vector2(Window.Get().ClientSize.X - 11, Window.Get().MousePosition.Y);
                     }
                 }
             }
 
-            OpenTK.Mathematics.Vector2 mousePos = (MouseListener.getX(), MouseListener.getY());
+            OpenTK.Mathematics.Vector2 mousePos = (MouseListener.GetX(), MouseListener.GetY());
             foreach (GameObject gameObject in GameObjects)
             {
-                Transform trans = gameObject.transform;
+                Transform trans = gameObject.Transform;
 
                 Vector2 pos = trans.Position;
                 Vector2 scale = trans.Scale;
@@ -110,7 +118,7 @@ namespace MarioGabeKasper.Engine.Scenes
                 if (CollisionCheck.PointInBox(pos.X, pos.Y, pos.X + scale.X, pos.Y + scale.Y, MouseListener.GetOrthoX(), MouseListener.GetOrthoY()))
                 {
                     if (mouseState.IsButtonPressed(MouseButton.Left))
-                        p_activeGameObject = gameObject;
+                        PActiveGameObject = gameObject;
                 }
             }
 
@@ -121,7 +129,7 @@ namespace MarioGabeKasper.Engine.Scenes
         /// </summary>
         public override void Render()
         {
-            _renderer.Render();
+            Renderer.Render();
         }
 
         /// <summary>
@@ -131,20 +139,39 @@ namespace MarioGabeKasper.Engine.Scenes
         public override void ImGui(ImGuiController imGuiController)
         {
             base.ImGui(imGuiController);
+            SceneImGui();
+            AssetBrowser();
+        }
 
+        private void SceneImGui()
+        {
+            ImGuiNET.ImGui.Begin("Scene Settings");
+            ImGuiNET.ImGui.DragFloat("Camera multiplier ", ref Window.Get().Settings.SceneCameraSpeedMultiplier);
+            ImGuiNET.ImGui.DragFloat2("Camera multiplier ", ref Window.Get().Settings.GridSize, 16, 16);
+            // ImGuiNET.ImGui.Dr("Camera multiplier ", ref Window.Get().Settings.SceneCameraSpeedMultiplier);
+            ImGuiNET.ImGui.End();
+
+        }
+
+        private void AssetBrowser()
+        {
+            
             Vector2 itemSpacing;
             float windowX2;
 
             ImGuiWindowStart("Object Window", out itemSpacing, out windowX2);
-            for (int i = 0; i < sprites.GetSize(); i++)
+            
+            ImGuiNET.ImGui.SliderFloat("Asset Size", ref Window.Get().Settings.AssetZoomSize, 1f, 4f);
+            
+            for (int i = 0; i < sprites.sprites.Count; i++)
             {
                 Sprite sprite = sprites.GetSprite(i);
-                float spriteWidth = sprite.GetWidth() * 4;
-                float spriteHeigth = sprite.GetHeight() * 4;
+                float spriteWidth = sprite.Width * Window.Get().Settings.AssetZoomSize;
+                float spriteHeigth = sprite.Height * Window.Get().Settings.AssetZoomSize;
+
+                int id = sprite.TextureId;
                 
-                int id = sprite.GetTexID();
-                
-                Vector2[] texCoords = sprite.GetTexCoords();
+                Vector2[] texCoords = sprite.TexCoords;
 
                 ImGuiNET.ImGui.PushID(i);
             
@@ -157,8 +184,8 @@ namespace MarioGabeKasper.Engine.Scenes
                     GameObject obj = Prefabs.GenerateSpriteObject(sprite, 32, 32);
                     // levelEditorStuff._mouseControls.PickupObject(obj);
 
-                    var mouseGO = (MouseControls)levelEditorStuff.GetComponent<MouseControls>(typeof(MouseControls));
-                    mouseGO.PickupObject(obj);
+                    var mouseGo = (MouseControls)levelEditorStuff.GetComponent<MouseControls>(typeof(MouseControls));
+                    mouseGo.PickupObject(obj);
                 }
             
                 ImGuiNET.ImGui.PopID();
@@ -169,19 +196,19 @@ namespace MarioGabeKasper.Engine.Scenes
                 float lastButtonX2 = lastButtonPos.X;
                 float nextButtonX2 = lastButtonX2 + itemSpacing.X + spriteWidth;
             
-                if (i + 1 < sprites.GetSize() && nextButtonX2 < windowX2)
+                if (i + 1 < sprites.sprites.Count && nextButtonX2 < windowX2)
                 {
                     ImGuiNET.ImGui.SameLine();
                 }
             
             }
+            
             ImGuiEnd();
-
         }
         
-        private void ImGuiWindowStart(string Name, out Vector2 itemSpacing, out float windowX2)
+        private void ImGuiWindowStart(string name, out Vector2 itemSpacing, out float windowX2)
         {
-            ImGuiNET.ImGui.Begin(Name);
+            ImGuiNET.ImGui.Begin(name);
 
             Vector2 windowPos = new System.Numerics.Vector2();
             windowPos = ImGuiNET.ImGui.GetWindowPos();
@@ -204,11 +231,11 @@ namespace MarioGabeKasper.Engine.Scenes
         {
             if(GetCurrentMouseDown() != -1)
             {
-                MouseListener.mouseButtonCallback(GetCurrentMouseDown(), _mouseState);
+                MouseListener.MouseButtonCallback(GetCurrentMouseDown(), MouseState);
             }
         
-            MouseListener.MouseScrollCallback(_mouseState.Scroll.X, _mouseState.Scroll.Y);
-            MouseListener.mousePosCallback(_mouseState.X, _mouseState.Y);
+            MouseListener.MouseScrollCallback(MouseState.Scroll.X, MouseState.Scroll.Y);
+            MouseListener.MousePosCallback(MouseState.X, MouseState.Y);
         }
 
     }

@@ -7,27 +7,27 @@ namespace MarioGabeKasper.Engine.Core
 {
     public class GameObject
     {
-        private static int idCounter = 0;
-        public int uid = -1;
-        public string name;
-        public int zIndex;
-        public Transform transform;
+        private static int _idCounter = 0;
+        public int Uid = -1;
+        public string Name;
+        public int ZIndex;
+        public Transform Transform;
 
-        public List<Component> components = new List<Component>();
+        public List<Component> Components = new List<Component>();
 
         private int objType = 5;
 
         public GameObject(string name, Transform transform, int zIndex)
         {
-            this.name = name;
-            this.zIndex = zIndex;
-            this.transform = transform;
-            uid = idCounter++;
+            this.Name = name;
+            this.ZIndex = zIndex;
+            this.Transform = transform;
+            Uid = _idCounter++;
         }
 
         public virtual Component GetComponent<T>(Type componentClass) where T : Component
         {
-            foreach (var c in components)
+            foreach (var c in Components)
                 if (componentClass.IsAssignableFrom(c.GetType()))
                     try
                     {
@@ -45,17 +45,17 @@ namespace MarioGabeKasper.Engine.Core
 
         public Transform GetTransform()
         {
-            return transform;
+            return Transform;
         }
 
         public virtual Component RemoveComponent<T>(Type componentClass) where T : Component
         {
-            for (var i = 0; i < components.Count; i++)
+            for (var i = 0; i < Components.Count; i++)
             {
-                var c = components[i];
+                var c = Components[i];
                 if (componentClass.IsAssignableFrom(c.GetType()))
                 {
-                    components.RemoveAt(i);
+                    Components.RemoveAt(i);
                     return default;
                 }
             }
@@ -65,49 +65,49 @@ namespace MarioGabeKasper.Engine.Core
 
         public void AddComponent(Component c)
         {
-            c.GenerateID();
-            components.Add(c);
+            c.GenerateId();
+            Components.Add(c);
             c.SetGameObject(this);
         }
 
         public void Start()
         {
-            foreach (var component in components) component.Start(this);
+            foreach (var component in Components) component.Start(this);
         }
 
         public void Update(float dt)
         {
             ;
-            foreach (var component in components)
+            foreach (var component in Components)
             {
-                component.update(dt);
+                component.Update(dt);
             }
         }
 
         public int GetZIndex()
         {
-            return zIndex;
+            return ZIndex;
         }
 
-        public void ImGui()
+        public void ImGui_()
         {
-            foreach (var component in components) component.ImGui();
-            GetTransform().ImGui();
+            foreach (var component in Components) component.ImGui_();
+            GetTransform().ImGui_();
         }
 
-        public static void Init(int maxID)
+        public static void Init(int maxId)
         {
-            idCounter = maxID;
+            _idCounter = maxId;
         }
 
         public List<Component> GetAllComponent()
         {
-            return components;
+            return Components;
         }
 
-        public int GetUID()
+        public int GetUid()
         {
-            return uid;
+            return Uid;
         }
     }
 }

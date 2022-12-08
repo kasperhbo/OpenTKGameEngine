@@ -5,14 +5,14 @@ namespace MarioGabeKasper.Engine.Components
 {
     public class Rigidbody : Component
     {
-        public int colliderType = 0;
-        public float friction = 0.9f;
-        public Vector3 vel = Vector3.One;
+        public int ColliderType = 0;
+        public float Friction = 0.9f;
+        public Vector3 Vel = Vector3.One;
         [JsonIgnore] private Vector4 tmp = new Vector4(1, 1, 1, 0);
         
         public override void SetObjectType()
         {
-            objType = 3;
+            ObjType = 3;
         }
     }
 }

@@ -11,20 +11,20 @@ namespace MarioGabeKasper.Engine.Core
 {
     public class FrameBuffer
     {
-        private int fboID = 0;
+        private int fboId = 0;
         private Texture texture = null; 
 
         public FrameBuffer(int width, int height)
         {
             //Generate FrameBuffer
-            fboID = GL.GenFramebuffer();
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fboID);
+            fboId = GL.GenFramebuffer();
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fboId);
 
             //Create the texture to render the data to
             this.texture = new Texture(width, height);
             
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, 
-                TextureTarget.Texture2D, this.texture.GetTexID(), 0);
+                TextureTarget.Texture2D, this.texture.GetTexId(), 0);
             
             //Create render buffer, store depth info
             int rboId = GL.GenRenderbuffer();
@@ -48,7 +48,7 @@ namespace MarioGabeKasper.Engine.Core
 
         public void Bind()
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fboID);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fboId);
         }
 
         public void UnBind()
@@ -56,14 +56,14 @@ namespace MarioGabeKasper.Engine.Core
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
-        public int GetFBOID()
+        public int GetFboid()
         {
-            return fboID;
+            return fboId;
         }
         
-        public int GetTextureID()
+        public int GetTextureId()
         {
-            return texture.GetTexID();
+            return texture.GetTexId();
         }
     }
 }

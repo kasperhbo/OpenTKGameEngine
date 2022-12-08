@@ -54,7 +54,7 @@ namespace MarioGabeKasper.Engine.Components
             return t.Position.Equals(Position) && t.Scale.Equals(Scale);
         }
 
-        public void ImGui()
+        public void ImGui_()
         {
             CreateDefaultFieldWindow();
         }

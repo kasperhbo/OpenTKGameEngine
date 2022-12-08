@@ -10,29 +10,29 @@ namespace MarioGabeKasper.Engine.Renderer
 {
     public class DebugDraw
     {
-        private static int maxLines = 500;
+        private static int _maxLines = 500;
 
-        private static List<Line2D> lines = new List<Line2D>();
+        private static List<Line2D> _lines = new List<Line2D>();
 
-        private static float[] vertexArray = new float[maxLines * 6 * 2];
-        private static Shader shader = AssetPool.GetShader(new ShaderSource("../../../debugLine2D.vert", "../../../debugLine2D.frag"));
+        private static float[] _vertexArray = new float[_maxLines * 6 * 2];
+        private static Shader _shader = AssetPool.GetShader(new ShaderSource("../../../debugLine2D.vert", "../../../debugLine2D.frag"));
 
-        private static int vaoID;
-        private static int vboID;
+        private static int _vaoId;
+        private static int _vboId;
 
-        private static bool started = false;
+        private static bool _started = false;
 
         public static void Start()
         {
             //Generate VAO
-            vaoID = GL.GenVertexArray();
-            GL.BindVertexArray(vaoID);
+            _vaoId = GL.GenVertexArray();
+            GL.BindVertexArray(_vaoId);
 
             //Create vbo
-            vboID = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vboID);
+            _vboId = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vboId);
 
-            GL.BufferData(BufferTarget.ArrayBuffer, vertexArray.Length * sizeof(float), vertexArray,
+            GL.BufferData(BufferTarget.ArrayBuffer, _vertexArray.Length * sizeof(float), _vertexArray,
                 BufferUsageHint.DynamicDraw);
             
             //Position
@@ -49,18 +49,18 @@ namespace MarioGabeKasper.Engine.Renderer
 
         public static void BeginFrame()
         {
-            if (!started)
+            if (!_started)
             {
                 Start();
-                started = true;
+                _started = true;
             }
             
             //Remove all dead lines
-            for (int i = 0; i < lines.Count; i++)
+            for (int i = 0; i < _lines.Count; i++)
             {
-                if (lines[i].BeginFrame() < 0)
+                if (_lines[i].BeginFrame() < 0)
                 {
-                    lines.RemoveAt(i);
+                    _lines.RemoveAt(i);
                     i--;
                 }
             }
@@ -68,70 +68,69 @@ namespace MarioGabeKasper.Engine.Renderer
         
         public static void Draw()
         {
-            if (lines.Count <= 0)
+            if (_lines.Count <= 0)
                 return;
 
             int index = 0;
-            foreach (var line in lines)
+            foreach (var line in _lines)
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Vector2 position = i == 0 ? line.lineData.from : line.lineData.to;
-                    Vector3 color = line.lineData.color;
+                    Vector2 position = i == 0 ? line.LineData.From : line.LineData.To;
+                    Vector3 color = line.LineData.Color;
                     
                     //load position
-                    vertexArray[index] = position.X;
-                    vertexArray[index + 1] = position.Y;
-                    vertexArray[index + 2] = -10.0f;
+                    _vertexArray[index] = position.X;
+                    _vertexArray[index + 1] = position.Y;
+                    _vertexArray[index + 2] = -10.0f;
                    
                     //load color
-                    vertexArray[index + 3] = color.X;
-                    vertexArray[index + 4] = color.Y;
-                    vertexArray[index + 5] = color.Z;
+                    _vertexArray[index + 3] = color.X;
+                    _vertexArray[index + 4] = color.Y;
+                    _vertexArray[index + 5] = color.Z;
 
                     index += 6;
                 }
             }
             
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vboID);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vboId);
             var ptr = IntPtr.Zero;
-            GL.BufferSubData(BufferTarget.ArrayBuffer, ptr, vertexArray.Length * sizeof(float), vertexArray);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, ptr, _vertexArray.Length * sizeof(float), _vertexArray);
             
-            shader.use();
-            shader.uploadMat4f("uProjection", Window.GetScene().GetCamera().GetProjectionMatrix());
-            shader.uploadMat4f("uView", Window.GetScene().GetCamera().GetViewMatrix());
+            _shader.Use();
+            _shader.UploadMat4F("uProjection", Window.GetScene().GetCamera().GetProjectionMatrix());
+            _shader.UploadMat4F("uView", Window.GetScene().GetCamera().GetViewMatrix());
             
-            GL.BindVertexArray(vaoID);
+            GL.BindVertexArray(_vaoId);
             GL.EnableVertexAttribArray(0);
             GL.EnableVertexAttribArray(1);
             
-            
-            GL.DrawArrays(PrimitiveType.Lines, 0, lines.Count * 6 * 2);
+            GL.DrawArrays(PrimitiveType.Lines, 0, _lines.Count * 6 * 2);
             
             GL.DisableVertexAttribArray(0);
             GL.DisableVertexAttribArray(1);
             GL.BindVertexArray(0);
             
-            shader.detach();
+            _shader.Detach();
         }
 
 
         public static void AddLine2D(Vector2 from, Vector2 to)
         {
-            if (lines.Count >= maxLines) return;
+            if (_lines.Count >= _maxLines) return;
             AddLine2D(from, to, new Vector3(0,1,0), 1);
         }
         
         public static void AddLine2D(Vector2 from, Vector2 to, Vector3 color)
         {
-            if (lines.Count >= maxLines) return;
+            if (_lines.Count >= _maxLines) return;
             AddLine2D(from, to, color, 1);
         }
         
         public static void AddLine2D(Vector2 from, Vector2 to, Vector3 color, int lifeTime)
         {
-            if (lines.Count >= maxLines) return;
-            DebugDraw.lines.Add(new Line2D(new Line2DStruct(from, to, color, lifeTime)));
+            if (_lines.Count >= _maxLines) return;
+            DebugDraw._lines.Add(new Line2D(new Line2DStruct(from, to, color, lifeTime)));
         }
     }
 }

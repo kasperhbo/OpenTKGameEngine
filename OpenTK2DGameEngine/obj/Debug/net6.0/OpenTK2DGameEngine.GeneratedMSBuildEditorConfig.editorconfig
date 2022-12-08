@@ -7,4 +7,4 @@ build_property.InvariantGlobalization =
 build_property.PlatformNeutralAssembly = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = MarioGabeKasper
-build_property.ProjectDir = D:\Downloads\OpenTKMario-master\OpenTKMario-master\OpenTK2DGameEngine\
+build_property.ProjectDir = D:\dev\GameEngineOpenTK\OpenTKGameEngine\OpenTK2DGameEngine\

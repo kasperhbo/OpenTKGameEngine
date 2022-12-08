@@ -10,33 +10,33 @@ namespace MarioGabeKasper.Engine.Renderer
     [JsonConverter(typeof(ComponentSerializer))]
     public class Texture 
     {
-        public string filepath;
-        public int texID;
-        public int width, height;
-        public int objType = 4;
+        public string Filepath;
+        public int TexId;
+        public int Width, Height;
+        public int ObjType = 4;
 
         public Texture()
         {
-            this.filepath = "";
-            height = -1;
-            width = -1;
-            texID = -1;
+            this.Filepath = "";
+            Height = -1;
+            Width = -1;
+            TexId = -1;
         }
 
         public Texture(int width, int height)
         {
-            this.width = width;
-            this.height = height;
+            this.Width = width;
+            this.Height = height;
 
-            this.filepath = "Generated";
+            this.Filepath = "Generated";
 
             // Generate handle
-            texID = GL.GenTexture();
+            TexId = GL.GenTexture();
 
             IntPtr nullPtr = IntPtr.Zero;
              
             // Bind the handle            
-            GL.BindTexture(TextureTarget.Texture2D, texID);
+            GL.BindTexture(TextureTarget.Texture2D, TexId);
             
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
                 (int)TextureMinFilter.Linear);
@@ -49,14 +49,14 @@ namespace MarioGabeKasper.Engine.Renderer
 
         public void Init(string filepath)
         { 
-            this.filepath = filepath;
+            this.Filepath = filepath;
 
             // Generate handle
-            texID = GL.GenTexture();
+            TexId = GL.GenTexture();
              
             // Bind the handle
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texID);
+            GL.BindTexture(TextureTarget.Texture2D, TexId);
 
             // For this example, we're going to use .NET's built-in System.Drawing library to load textures.
 
@@ -70,8 +70,8 @@ namespace MarioGabeKasper.Engine.Renderer
             {
                 var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
 
-                this.width = image.Width;
-                this.height = image.Height;
+                this.Width = image.Width;
+                this.Height = image.Height;
 
                 // Now that our pixels are prepared, it's time to generate a texture. We do this with GL.TexImage2D.
                 // Arguments:
@@ -116,29 +116,29 @@ namespace MarioGabeKasper.Engine.Renderer
         }
 
         public int GetWidth() {
-            return this.width;
+            return this.Width;
         }
 
         public int GetHeight() {
-            return this.height;
+            return this.Height;
         }
 
         public string GetFilePath()
         {
-            return filepath;
+            return Filepath;
         }
 
-        public int GetTexID()
+        public int GetTexId()
         {
-            return texID;
+            return TexId;
         }
 
-        public void bind()
+        public void Bind()
         {
-            GL.BindTexture(TextureTarget.Texture2D, texID);
+            GL.BindTexture(TextureTarget.Texture2D, TexId);
         }
 
-        public void unbind()
+        public void Unbind()
         {
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
@@ -150,10 +150,10 @@ namespace MarioGabeKasper.Engine.Renderer
             if (!(obj is Texture)) return false;
 
             Texture oTex = (Texture) obj;
-            return oTex.GetWidth().Equals(width) && oTex.GetHeight().Equals(height) && oTex.GetTexID().Equals(texID) 
-                && oTex.filepath.Equals(filepath);
-            return oTex.GetWidth() == this.width && oTex.GetHeight() == this.height && oTex.GetTexID() == this.texID
-                && oTex.GetFilePath().Equals(this.filepath);
+            return oTex.GetWidth().Equals(Width) && oTex.GetHeight().Equals(Height) && oTex.GetTexId().Equals(TexId) 
+                && oTex.Filepath.Equals(Filepath);
+            return oTex.GetWidth() == this.Width && oTex.GetHeight() == this.Height && oTex.GetTexId() == this.TexId
+                && oTex.GetFilePath().Equals(this.Filepath);
         }
     }
 }

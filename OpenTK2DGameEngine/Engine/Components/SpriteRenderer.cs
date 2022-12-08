@@ -2,19 +2,23 @@
 
 using MarioGabeKasper.Engine.Core;
 using MarioGabeKasper.Engine.Renderer;
+using OpenTK.Audio.OpenAL.Extensions.SOFT.DeviceClock;
 
-// using OpenTK.Mathematics;
 
 namespace MarioGabeKasper.Engine.Components
 {
     public class SpriteRenderer : Component
     {
-        public Vector4 _color = new Vector4(1, 1, 1, 1);
-        public Sprite _sprite = new Sprite();
+        public Vector4 Color = new Vector4(1,1,1,1);
+        
+        public Sprite Sprite = new Sprite();
 
         private Transform lastTransform;
-        private bool isDirty = true;
-
+        public bool IsDirty = true;
+        
+        public Texture Texture => Sprite.Texture;
+        public Vector2[] TextureCoords => Sprite.TexCoords;
+        
         public SpriteRenderer()
         {
             SetObjectType();
@@ -23,74 +27,37 @@ namespace MarioGabeKasper.Engine.Components
         public override void Start(GameObject gameObject)
         {
             lastTransform = gameObject.GetTransform().Copy();
-            isDirty = true;
+            IsDirty = true;
             base.Start(gameObject);
         }
         
-        public override void update(float dt)
+        public override void Update(float dt)
         {
             // Console.WriteLine(this._sprite.texture);
-            if (!lastTransform.Equals(parent.GetTransform()))
+            if (!lastTransform.Equals(Parent.GetTransform()))
             {
                 // Console.WriteLine("Transform changed");
-                parent.GetTransform().Copy(lastTransform);
-                isDirty = true;
+                Parent.GetTransform().Copy(lastTransform);
+                IsDirty = true;
             }
         }
         
-        public override void ImGui()
+        public override void ImGui_()
         {
-            System.Numerics.Vector4 _col = new System.Numerics.Vector4(_color.X, _color.Y, _color.Z, _color.W);
+            System.Numerics.Vector4 col = new System.Numerics.Vector4(Color.X, Color.Y, Color.Z, Color.W);
             
-            if (ImGuiNET.ImGui.ColorPicker4("test", ref _col))
+            if (ImGuiNET.ImGui.ColorPicker4("test", ref col))
             {
-                this._color = new Vector4(_col.X, _col.Y, _col.Z, _col.W);
-                isDirty = true;
+                this.Color = new Vector4(col.X, col.Y, col.Z, col.W);
+                IsDirty = true;
             }
 
-            base.ImGui();
+            base.ImGui_();
         }
-        
-        public Vector4 GetColor() {
-            return this._color;
-        }
-
-        public Texture GetTexture() {
-            return _sprite.GetTexture();
-        }
-        
-        public System.Numerics.Vector2[] GetTexCoords() {
-            return _sprite.GetTexCoords();
-        }
-        
-        public void SetSprite(Sprite sprite)
+       
+        public sealed override void SetObjectType()
         {
-            _sprite = sprite;
-            isDirty = true;
-        }
-
-        public void SetColor(Vector4 color)
-        {
-            if (!_color.Equals(color))
-            {
-                _color = color;
-                isDirty = true;
-            }
-        }
-
-        public bool IsDirty()
-        {
-            return isDirty;
-        }
-
-        public void SetClean()
-        {
-            isDirty = false;
-        }
-        
-        public override void SetObjectType()
-        {
-            objType = 2;
+            ObjType = 2;
         }
 
     }

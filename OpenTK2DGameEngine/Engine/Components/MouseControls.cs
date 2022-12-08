@@ -14,12 +14,12 @@ namespace MarioGabeKasper.Engine.Components
             Window.GetScene().AddGameObjectToScene(go);
         }
 
-        public void Place()
+        private void Place()
         {
             this.holdingObject = null;
         }
 
-        public override void update(float dt)
+        public override void Update(float dt)
         {
             if (holdingObject != null)
             {
@@ -28,13 +28,13 @@ namespace MarioGabeKasper.Engine.Components
                 holdingObject.GetTransform().Position.Y = MouseListener.GetOrthoY();
 
                 holdingObject.GetTransform().Position.X =
-                    (int)(holdingObject.GetTransform().Position.X / Settings.GridWidth) * Settings.GridWidth;
+                    (int)(holdingObject.GetTransform().Position.X / Window.Get().Settings.GridSize.X) * Window.Get().Settings.GridSize.X;
 
                 holdingObject.GetTransform().Position.Y =
-                    (int)(holdingObject.GetTransform().Position.Y / Settings.GridHeight) * Settings.GridHeight;
+                    (int)(holdingObject.GetTransform().Position.Y / Window.Get().Settings.GridSize.Y) * Window.Get().Settings.GridSize.Y;
 
                 
-                if (MouseListener.mouseButtonDown(Window.GetScene().GetCurrentMouseDown())) {
+                if (MouseListener.MouseButtonDown(Window.GetScene().GetCurrentMouseDown())) {
                     Place();
                 }
             }
@@ -42,7 +42,7 @@ namespace MarioGabeKasper.Engine.Components
 
         public override void SetObjectType()
         {
-            objType = 5;
+            ObjType = 5;
         }
     }
 }

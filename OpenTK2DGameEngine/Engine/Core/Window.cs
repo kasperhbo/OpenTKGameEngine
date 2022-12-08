@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
 using ImGuiNET;
 using MarioGabeKasper.Editor;
 using MarioGabeKasper.Engine.GUI;
 using MarioGabeKasper.Engine.Renderer;
 using MarioGabeKasper.Engine.Scenes;
+using Newtonsoft.Json;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -16,27 +18,28 @@ namespace MarioGabeKasper.Engine.Core
     // OpenToolkit allows for several functions to be overriden to extend functionality; this is how we'll be writing code.
     public class Window : GameWindow
     {
-        public static Scene _currentScene;
+        private static Scene _currentScene;
 
         private float beginTime = (float)GLFW.GetTime();
         private float dt = -1.0f;
         private float endTime;
 
-        private static int width, height;
+        private static int _width, _height;
         private Vector4 clearColor;
 
         public Scene CurrentScene => _currentScene;
         private ImGuiController _guiController;
-
+        public Settings Settings;
         private FrameBuffer _frameBuffer;
         
-        private static Window s_window = null;
+        private static Window _sWindow = null;
 
         public static Window Get()
         {
-            if (s_window == null)
+            if (_sWindow == null)
             {
                 Console.WriteLine("No Window, Initialize");
+                
                 var nativeWindowSettings = new NativeWindowSettings
                 {
                     Size = new Vector2i(Settings.Width, Settings.Height),
@@ -47,13 +50,13 @@ namespace MarioGabeKasper.Engine.Core
                 };
 
                 // To create a new window, create a class that extends GameWindow, then call Run() on it.
-                using (s_window = new Window(GameWindowSettings.Default, nativeWindowSettings))
+                using (_sWindow = new Window(GameWindowSettings.Default, nativeWindowSettings))
                 {
-                    s_window.Run();
+                    _sWindow.Run();
                 }
             }
             
-            return s_window;
+            return _sWindow;
         }
 
         /// <summary>
@@ -64,7 +67,10 @@ namespace MarioGabeKasper.Engine.Core
         public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
         {
-
+            LoadSettings();
+            
+            if(!File.Exists("../../../settings.json"))
+                Settings = new Settings();
         }
 
         /// <summary>
@@ -74,8 +80,8 @@ namespace MarioGabeKasper.Engine.Core
         {
             base.OnLoad();
 
-            width = ClientSize.X;
-            height = ClientSize.Y;
+            _width = ClientSize.X;
+            _height = ClientSize.Y;
 
             clearColor = new Vector4(1, 1, 1, 1);
 
@@ -107,6 +113,7 @@ namespace MarioGabeKasper.Engine.Core
             
             _guiController.Update(this, (float)args.Time);
 
+            //Render scene to frame buffer
             this._frameBuffer.Bind();
             
             DebugDraw.BeginFrame();
@@ -114,7 +121,6 @@ namespace MarioGabeKasper.Engine.Core
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcAlpha);
-
             
             //Render scenes
             if (args.Time > 0)
@@ -126,15 +132,10 @@ namespace MarioGabeKasper.Engine.Core
             this._frameBuffer.UnBind();
             
             ////Update ImGui
-            
             _currentScene.SceneImGui(_guiController);
-            
-            //Render the gameviewport
             GameViewWindow.Imgui();
-            
             _guiController.Render();
-            
-            ImGuiController.CheckGLError("End of frame");
+            ImGuiController.CheckGlError("End of frame");
 
             //Replacing front with back buffer
             SwapBuffers();
@@ -170,11 +171,12 @@ namespace MarioGabeKasper.Engine.Core
         {
             base.OnResize(e);
 
-            // Update the opengl viewport
-            GL.Viewport(0, 0, 1920,1080);
+            _width = ClientSize.X;
+            _height = ClientSize.Y;
 
-            width = ClientSize.X;
-            height = ClientSize.Y;
+            // Update the opengl viewport
+            GL.Viewport(0, 0, _width,_height);
+
 
             // Tell ImGui of the new size
             _guiController.WindowResized(ClientSize.X, ClientSize.Y);
@@ -213,6 +215,22 @@ namespace MarioGabeKasper.Engine.Core
             _currentScene.Start();
         }
 
+        public void LoadSettings()
+        {
+            if (File.Exists("../../../settings.json"))
+            {
+                Settings settings = JsonConvert.DeserializeObject <Settings>(File.ReadAllText("../../../settings.json"));
+                Settings = settings;
+            }
+        }
+        
+        public void SaveSettings()
+        {
+            string settingsData = JsonConvert.SerializeObject(Settings);
+            File.WriteAllText("../../../settings.json", settingsData);
+        }
+
+
         /// <summary>
         /// Get the current scene
         /// </summary>
@@ -228,7 +246,7 @@ namespace MarioGabeKasper.Engine.Core
         /// <returns>width</returns>
         public static int GetSizeX()
         {
-            return width;
+            return _width;
         }
 
         /// <summary>
@@ -237,16 +255,10 @@ namespace MarioGabeKasper.Engine.Core
         /// <returns>height</returns>
         public static int GetSizeY()
         {
-            return height;
+            return _height;
         }
+        
 
-        /// <summary>
-        /// If Window is closed from glfw
-        /// </summary>
-        public override void Close()
-        {
-            base.Close();
-        }
 
         public FrameBuffer GetFrameBuffer()
         {

@@ -10,16 +10,13 @@ namespace MarioGabeKasper.Editor
         public static void Imgui()
         {
             ImGui.Begin("Game Viewport", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
-
+            
             Vector2 windowSize = GetLargestSizeForViewport();
             Vector2 windowPos = GetCenteredPosForViewport(windowSize);
-            
             ImGui.SetCursorPos(new Vector2(windowPos.X, windowPos.Y));
+            IntPtr textureId = new IntPtr(Window.Get().GetFrameBuffer().GetTextureId());
+            ImGui.Image(textureId, new Vector2(windowSize.X, windowSize.Y), new Vector2(0,1), new Vector2(1,0));
             
-            IntPtr textureID = new IntPtr(Window.Get().GetFrameBuffer().GetTextureID());
-            
-            ImGui.Image(textureID, new Vector2(windowSize.X, windowSize.Y), new Vector2(0,1), new Vector2(1,0));                                   
-
             ImGui.End();
         }
 

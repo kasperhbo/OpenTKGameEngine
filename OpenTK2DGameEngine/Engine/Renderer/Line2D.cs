@@ -5,34 +5,34 @@ namespace MarioGabeKasper.Engine.Renderer
 {
     public struct Line2DStruct
     {
-        public Vector2 from;
-        public Vector2 to;
+        public Vector2 From;
+        public Vector2 To;
 
-        public Vector3 color;
-        public int lifeTime;
+        public Vector3 Color;
+        public int LifeTime;
 
         public Line2DStruct(Vector2 from, Vector2 to, Vector3 color, int lifeTime)
         {
-            this.from = from;
-            this.to = to;
-            this.color = color;
-            this.lifeTime = lifeTime;
+            this.From = from;
+            this.To = to;
+            this.Color = color;
+            this.LifeTime = lifeTime;
         }
     }
     
     public class Line2D
     {
-        public Line2DStruct lineData = new Line2DStruct();
+        public Line2DStruct LineData = new Line2DStruct();
 
         public Line2D(Line2DStruct lineData)
         {
-            this.lineData = lineData;
+            this.LineData = lineData;
         }
         
         public int BeginFrame()
         {
-            lineData.lifeTime--;
-            return lineData.lifeTime;
+            LineData.LifeTime--;
+            return LineData.LifeTime;
         }
         
     }

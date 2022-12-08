@@ -83,9 +83,9 @@ namespace MarioGabeKasper.Engine.Renderer
                 BufferUsageHint.DynamicDraw);
 
             //Create And Upload indices
-            var eboID = GL.GenBuffer();
+            var eboId = GL.GenBuffer();
             var indices = GenerateIndices();
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, eboID);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, eboId);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(int), indices,
                 BufferUsageHint.StaticDraw);
 
@@ -116,11 +116,11 @@ namespace MarioGabeKasper.Engine.Renderer
             {
                 var spr = _sprites[i];
 
-                if (spr.IsDirty())
+                if (spr.IsDirty)
                 {
                     rebufferData = true;
                     LoadVertexProperties(i);
-                    spr.SetClean();
+                    spr.IsDirty = false;
                 }
             }
 
@@ -131,18 +131,18 @@ namespace MarioGabeKasper.Engine.Renderer
                 GL.BufferSubData(BufferTarget.ArrayBuffer, ptr, _vertices.Length * sizeof(float), _vertices);
             }
 
-            _shader.use();
+            _shader.Use();
 
-            _shader.uploadMat4f("uProjection", camera.GetProjectionMatrix());
-            _shader.uploadMat4f("uView", camera.GetViewMatrix());
+            _shader.UploadMat4F("uProjection", camera.GetProjectionMatrix());
+            _shader.UploadMat4F("uView", camera.GetViewMatrix());
 
             for (var i = 0; i < textures.Count; i++)
             {
                 GL.ActiveTexture(TextureUnit.Texture0 + i + 1);
-                textures[i].bind();
+                textures[i].Bind();
             }
 
-            _shader.uploadIntArray("uTextures", _texSlots);
+            _shader.UploadIntArray("uTextures", _texSlots);
 
             GL.BindVertexArray(_vaoId);
 
@@ -157,9 +157,9 @@ namespace MarioGabeKasper.Engine.Renderer
 
             GL.BindVertexArray(0);
 
-            for (var i = 0; i < textures.Count; i++) textures[i].unbind();
+            for (var i = 0; i < textures.Count; i++) textures[i].Unbind();
 
-            _shader.detach();
+            _shader.Detach();
         }
 
         public void AddSprite(SpriteRenderer spriteRenderer)
@@ -169,9 +169,9 @@ namespace MarioGabeKasper.Engine.Renderer
             _sprites[index] = spriteRenderer;
             _numSprites++;
 
-            if (spriteRenderer.GetTexture() != null)
-                if (!textures.Contains(spriteRenderer.GetTexture()))
-                    textures.Add(spriteRenderer.GetTexture());
+            if (spriteRenderer.Texture != null)
+                if (!textures.Contains(spriteRenderer.Texture))
+                    textures.Add(spriteRenderer.Texture);
 
             //Add properties to vert array
             LoadVertexProperties(index);
@@ -190,17 +190,17 @@ namespace MarioGabeKasper.Engine.Renderer
             float xAdd = 1;
             float yAdd = 1;
 
-            var color = sprite.GetColor();
-            var texCoords = sprite.GetTexCoords();
+            var color = sprite.Color;
+            var texCoords = sprite.TextureCoords;
 
-            var texID = 0;
+            var texId = 0;
 
             //Find texture in textures list
-            if (sprite.GetTexture() != null)
+            if (sprite.Texture != null)
                 for (var i = 0; i < textures.Count; i++)
-                    if (textures[i].Equals(sprite.GetTexture()))
+                    if (textures[i].Equals(sprite.Texture))
                     {
-                        texID = i + 1;
+                        texId = i + 1;
                         break;
                     }
 
@@ -230,7 +230,7 @@ namespace MarioGabeKasper.Engine.Renderer
                 _vertices[offset + 7] = texCoords[i].Y;
 
                 //load tex id
-                _vertices[offset + 8] = texID;
+                _vertices[offset + 8] = texId;
 
                 offset += _vertexSize;
             }

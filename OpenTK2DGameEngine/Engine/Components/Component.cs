@@ -9,24 +9,24 @@ namespace MarioGabeKasper.Engine.Components
     public abstract class Component : DefaultImGuiFieldWindow
     {
         
-        protected static int idCounter = 0;
-        public int uid = -1;
+        protected static int IdCounter = 0;
+        public int Uid = -1;
         
-        protected GameObject parent = null;
-        public int objType = -1;
+        protected GameObject Parent = null;
+        public int ObjType = -1;
         
         public virtual void Start(GameObject gameObject)
         {
-            this.parent = gameObject;
+            this.Parent = gameObject;
             SetObjectType();
         }
 
-        public virtual void update(float dt)
+        public virtual void Update(float dt)
         {
             
         }
 
-        public virtual void ImGui()
+        public virtual void ImGui_()
         {
             CreateDefaultFieldWindow();
         }
@@ -34,32 +34,27 @@ namespace MarioGabeKasper.Engine.Components
         
         public void SetGameObject(GameObject go)
         {
-            this.parent = go;
+            this.Parent = go;
         }
         
         public GameObject GetGameObject()
         {
-            return parent;
+            return Parent;
         }
 
         public abstract void SetObjectType();
 
-        public void GenerateID()
+        public void GenerateId()
         {
-            if (this.uid == -1)
+            if (this.Uid == -1)
             {
-                this.uid = idCounter++;
+                this.Uid = IdCounter++;
             }
         }
 
-        public int GetUID()
+        public static void Init(int maxId)
         {
-            return uid;
-        }
-
-        public static void Init(int maxID)
-        {
-            idCounter = maxID;
+            IdCounter = maxId;
         }
         
 

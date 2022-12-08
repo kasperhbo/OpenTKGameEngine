@@ -6,13 +6,13 @@ using MarioGabeKasper.Engine.Renderer;
 
 public struct ShaderSource
 {
-    public readonly string vertexPath;
-    public readonly string fragmentPath;
+    public readonly string VertexPath;
+    public readonly string FragmentPath;
 
     public ShaderSource(string vertexPath, string fragmentPath)
     {
-        this.vertexPath = vertexPath;
-        this.fragmentPath = fragmentPath;
+        this.VertexPath = vertexPath;
+        this.FragmentPath = fragmentPath;
     }
 }
 
@@ -20,9 +20,9 @@ namespace MarioGabeKasper.Engine.Utils
 {
     public class AssetPool
     {
-        private static readonly Dictionary<ShaderSource, Shader> _shaders = new();
-        private static readonly Dictionary<string, Texture> _textures = new();
-        private static readonly Dictionary<string, SpriteSheet> _spriteSheets = new();
+        private static readonly Dictionary<ShaderSource, Shader> Shaders = new();
+        private static readonly Dictionary<string, Texture> Textures = new();
+        private static readonly Dictionary<string, SpriteSheet> SpriteSheets = new();
 
         /// <summary>
         ///     Getting a shader if not existing create one
@@ -31,11 +31,11 @@ namespace MarioGabeKasper.Engine.Utils
         /// <returns></returns>
         public static Shader GetShader(ShaderSource sourceName)
         {
-            if (_shaders.TryGetValue(sourceName, out var shaderOut)) return shaderOut;
+            if (Shaders.TryGetValue(sourceName, out var shaderOut)) return shaderOut;
 
-            var shader = new Shader(sourceName.vertexPath, sourceName.fragmentPath);
-            shader.compile();
-            _shaders.Add(sourceName, shader);
+            var shader = new Shader(sourceName.VertexPath, sourceName.FragmentPath);
+            shader.Compile();
+            Shaders.Add(sourceName, shader);
             return shader;
         }
 
@@ -47,28 +47,28 @@ namespace MarioGabeKasper.Engine.Utils
         public static Texture GetTexture(string sourceName)
         {
             string fullSource = "../../../Resources/Textures/" + sourceName;
-            if (_textures.TryGetValue(fullSource, out var textureOut)) return textureOut;
+            if (Textures.TryGetValue(fullSource, out var textureOut)) return textureOut;
 
             var texture = new Texture();
             texture.Init(fullSource);
-            _textures.Add(fullSource, texture);
+            Textures.Add(fullSource, texture);
             return texture;
         }
 
         public static void AddSpriteSheet(string sourceName, SpriteSheet spriteSheet)
         {
             string fullSource = "../../../Resources/Textures/" + sourceName;
-            if (!_spriteSheets.ContainsKey(fullSource))
-                _spriteSheets.Add(fullSource, spriteSheet);
+            if (!SpriteSheets.ContainsKey(fullSource))
+                SpriteSheets.Add(fullSource, spriteSheet);
         }
 
         public static SpriteSheet GetSpriteSheet(string sourceName)
         {
             string fullSource = "../../../Resources/Textures/" + sourceName;
-            if (!_spriteSheets.ContainsKey(fullSource))
+            if (!SpriteSheets.ContainsKey(fullSource))
                 Console.WriteLine("Error trying to get non excisting sprite sheet in asset pool");
 
-            return _spriteSheets.GetValueOrDefault(fullSource, null);
+            return SpriteSheets.GetValueOrDefault(fullSource, null);
         }
     }
 }
