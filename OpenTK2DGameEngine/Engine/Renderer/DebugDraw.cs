@@ -98,8 +98,8 @@ namespace MarioGabeKasper.Engine.Renderer
             GL.BufferSubData(BufferTarget.ArrayBuffer, ptr, _vertexArray.Length * sizeof(float), _vertexArray);
             
             _shader.Use();
-            _shader.UploadMat4F("uProjection", Window.GetScene().GetCamera().GetProjectionMatrix());
-            _shader.UploadMat4F("uView", Window.GetScene().GetCamera().GetViewMatrix());
+            _shader.UploadMat4F("uProjection", Window.CurrentScene.SCamera.GetProjectionMatrix());
+            _shader.UploadMat4F("uView", Window.CurrentScene.SCamera.GetViewMatrix());
             
             GL.BindVertexArray(_vaoId);
             GL.EnableVertexAttribArray(0);

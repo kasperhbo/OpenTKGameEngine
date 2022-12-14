@@ -16,6 +16,7 @@
     <ItemGroup>
         <PackageReference Include="Accord.Math" Version="3.8.2-alpha" />
         <PackageReference Include="ImGui.NET.Docking" Version="1.75.0" />
+        <PackageReference Include="NAudio" Version="2.1.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta1" />
         <PackageReference Include="OpenTK" Version="4.7.4" />
         <PackageReference Include="OpenTK.Input" Version="4.7.5" />

@@ -15,22 +15,18 @@ namespace MarioGabeKasper.Engine.Renderer
         {
             var spr = (SpriteRenderer)go.GetComponent<SpriteRenderer>(typeof(SpriteRenderer));
 
-            // Console.WriteLine(spr.GameObject.Transform.scale.X);
-
             if (spr != null)
                 Add(spr, cam);
-            else
-                Console.WriteLine("null");
         }
 
         private void Add(SpriteRenderer spr, Camera cam)
         {
             var added = false;
             foreach (var batch in batches)
-                if (batch.HasRoom && batch.GetZIndex() == spr.GetGameObject().GetZIndex())
+                if (batch.HasRoom && batch.ZIndex == spr.Parent.ZIndex)
                 {
                     var tex = spr.Texture;
-                    if (tex == null || batch.HasTexture(tex) || batch.HasTextureRoom())
+                    if (tex == null || batch.HasTexture(tex) || batch.TextureRoom)
                     {
                         batch.AddSprite(spr);
                         added = true;
@@ -41,7 +37,7 @@ namespace MarioGabeKasper.Engine.Renderer
             if (!added)
             {
                 // Console.WriteLine("new batch");
-                var newBatch = new RenderBatch(maxBatchSize, cam, spr.GetGameObject().GetZIndex());
+                var newBatch = new RenderBatch(maxBatchSize, cam, spr.Parent.ZIndex);
                 newBatch.Start();
                 batches.Add(newBatch);
                 newBatch.AddSprite(spr);

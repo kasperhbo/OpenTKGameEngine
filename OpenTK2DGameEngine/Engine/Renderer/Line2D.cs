@@ -13,10 +13,10 @@ namespace MarioGabeKasper.Engine.Renderer
 
         public Line2DStruct(Vector2 from, Vector2 to, Vector3 color, int lifeTime)
         {
-            this.From = from;
-            this.To = to;
-            this.Color = color;
-            this.LifeTime = lifeTime;
+            From = from;
+            To = to;
+            Color = color;
+            LifeTime = lifeTime;
         }
     }
     

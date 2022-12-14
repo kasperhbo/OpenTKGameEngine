@@ -44,3 +44,9 @@ D:\dev\GameEngineOpenTK\OpenTKGameEngine\OpenTK2DGameEngine\obj\Debug\net6.0\ref
 D:\dev\GameEngineOpenTK\OpenTKGameEngine\OpenTK2DGameEngine\obj\Debug\net6.0\OpenTK2DGameEngine.pdb
 D:\dev\GameEngineOpenTK\OpenTKGameEngine\OpenTK2DGameEngine\obj\Debug\net6.0\OpenTK2DGameEngine.genruntimeconfig.cache
 D:\dev\GameEngineOpenTK\OpenTKGameEngine\OpenTK2DGameEngine\obj\Debug\net6.0\ref\OpenTK2DGameEngine.dll
+D:\dev\GameEngineOpenTK\OpenTKGameEngine\OpenTK2DGameEngine\bin\Debug\net6.0\NAudio.dll
+D:\dev\GameEngineOpenTK\OpenTKGameEngine\OpenTK2DGameEngine\bin\Debug\net6.0\NAudio.Asio.dll
+D:\dev\GameEngineOpenTK\OpenTKGameEngine\OpenTK2DGameEngine\bin\Debug\net6.0\NAudio.Core.dll
+D:\dev\GameEngineOpenTK\OpenTKGameEngine\OpenTK2DGameEngine\bin\Debug\net6.0\NAudio.Midi.dll
+D:\dev\GameEngineOpenTK\OpenTKGameEngine\OpenTK2DGameEngine\bin\Debug\net6.0\NAudio.Wasapi.dll
+D:\dev\GameEngineOpenTK\OpenTKGameEngine\OpenTK2DGameEngine\bin\Debug\net6.0\NAudio.WinMM.dll

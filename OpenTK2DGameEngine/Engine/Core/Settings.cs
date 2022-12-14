@@ -1,4 +1,7 @@
-﻿using System.Numerics;
+﻿// using OpenTK.Mathematics;
+
+using MarioGabeKasper.Engine.Utils;
+using Vector2 = System.Numerics.Vector2;
 
 namespace MarioGabeKasper.Engine.Core
 {
@@ -16,7 +19,7 @@ namespace MarioGabeKasper.Engine.Core
         /// </summary>
         // public int GridWidth = 32;
         // public int GridHeight = 32;
-        public Vector2 GridSize = new Vector2(32,32);
+        public Vector2Int GridSize = new Vector2Int(32,32);
         
         
         /// <summary>

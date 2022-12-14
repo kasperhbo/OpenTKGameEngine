@@ -1,48 +1,45 @@
-﻿using System;
-using MarioGabeKasper.Engine.Core;
+﻿using MarioGabeKasper.Engine.Core;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using Window = MarioGabeKasper.Engine.Core.Window;
 
-namespace MarioGabeKasper.Engine.Components
+namespace MarioGabeKasper.Engine.Components;
+
+public class MouseControls : Component
 {
-    public class MouseControls : Component
+    private GameObject holdingObject = null;
+
+    public void PickupObject(GameObject go)
     {
-        private GameObject holdingObject = null;
+        this.holdingObject = go;
+        Window.CurrentScene.AddGameObjectToScene(go);
+    }
 
-        public void PickupObject(GameObject go)
+    public override void Update(float dt)
+    {
+        if (holdingObject != null)
         {
-            Console.WriteLine("Pickup");
-            this.holdingObject = go;
-            Window.GetScene().AddGameObjectToScene(go);
-        }
+            holdingObject.Transform.Position.X = Input.OrthoX();
+            holdingObject.Transform.Position.Y = Input.OrthoY();
 
-        private void Place()
-        {
-            this.holdingObject = null;
-        }
-
-        public override void Update(float dt)
-        {
-            if (holdingObject != null)
-            {
-                //Transform transform = (Transform)holdingObject.GetComponent<Transform>(typeof(Transform));
-                holdingObject.GetTransform().Position.X = MouseListener.GetOrthoX();
-                holdingObject.GetTransform().Position.Y = MouseListener.GetOrthoY();
-
-                holdingObject.GetTransform().Position.X =
-                    (int)(holdingObject.GetTransform().Position.X / Window.Get().Settings.GridSize.X) * Window.Get().Settings.GridSize.X;
-
-                holdingObject.GetTransform().Position.Y =
-                    (int)(holdingObject.GetTransform().Position.Y / Window.Get().Settings.GridSize.Y) * Window.Get().Settings.GridSize.Y;
-
+            holdingObject.Transform.Position.X =
+                (int)(holdingObject.Transform.Position.X / Window.Get().Settings.GridSize.X) * Window.Get().Settings.GridSize.Y;
                 
-                if (MouseListener.MouseButtonDown(Window.GetScene().GetCurrentMouseDown())) {
-                    Place();
-                }
+            holdingObject.Transform.Position.Y =
+                (int)(holdingObject.Transform.Position.Y / Window.Get().Settings.GridSize.Y) * Window.Get().Settings.GridSize.Y;
+
+            if (Input.MouseDown(MouseButton.Button1)) {
+                Place();
             }
         }
+    }
+    
+    public void Place()
+    {
+        this.holdingObject = null;
+    }
 
-        public override void SetObjectType()
-        {
-            ObjType = 5;
-        }
+    public override void SetObjectType()
+    {
+        ObjType = 5;
     }
 }

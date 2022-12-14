@@ -12,7 +12,7 @@ namespace MarioGabeKasper.Engine.Scenes
             base.Init(window);
         }
 
-        public override void Update(float dt, MouseState mouseState, KeyboardState keyboardState)
+        public override void Update(float dt)
         {
         }
 

@@ -18,21 +18,26 @@ namespace MarioGabeKasper.Engine.Core
     // OpenToolkit allows for several functions to be overriden to extend functionality; this is how we'll be writing code.
     public class Window : GameWindow
     {
-        private static Scene _currentScene;
+        public static Scene CurrentScene { get; private set; }
 
         private float beginTime = (float)GLFW.GetTime();
         private float dt = -1.0f;
         private float endTime;
+        
+        public float TargetAspectRatio =>  16.0f / 9.0f;
 
-        private static int _width, _height;
         private Vector4 clearColor;
 
-        public Scene CurrentScene => _currentScene;
+        
         private ImGuiController _guiController;
         public Settings Settings;
-        private FrameBuffer _frameBuffer;
         
+        public FrameBuffer FrameBuffer { get; private set; }
+
         private static Window _sWindow = null;
+
+        public static int Width { get; private set; }
+        public static int Height { get; private set; }
 
         public static Window Get()
         {
@@ -80,8 +85,8 @@ namespace MarioGabeKasper.Engine.Core
         {
             base.OnLoad();
 
-            _width = ClientSize.X;
-            _height = ClientSize.Y;
+            Width = ClientSize.X;
+            Height = ClientSize.Y;
 
             clearColor = new Vector4(1, 1, 1, 1);
 
@@ -92,13 +97,10 @@ namespace MarioGabeKasper.Engine.Core
             _guiController = new ImGuiController(Size.X, Size.Y);
             ImGui.LoadIniSettingsFromDisk("../../../imgui/imgui.ini");
 
-            this._frameBuffer = new FrameBuffer(1920, 1080);
+            this.FrameBuffer = new FrameBuffer(1920, 1080);
             
+            Input.Initialize(this);
             
-            //Loading imgui font
-            //ImGui.GetIO().Fonts.AddFontFromFileTTF("../../../Resources/Fonts/segoeui.ttf", 13);
-            //_guiController.RecreateFontDeviceTexture();
-
             //Open the Level Editor Scene
             ChangeScene(new LevelEditorScene());
         }
@@ -107,16 +109,19 @@ namespace MarioGabeKasper.Engine.Core
         /// Render current scene and openGL
         /// </summary>
         /// <param name="args"></param>
+        ///
+        private GameViewWindow _gameViewWindow = new GameViewWindow();
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             base.OnRenderFrame(args);
             
             _guiController.Update(this, (float)args.Time);
 
-            //Render scene to frame buffer
-            this._frameBuffer.Bind();
+            #region Frame Buffer
+            this.FrameBuffer.Bind();
             
             DebugDraw.BeginFrame();
+            
             GL.ClearColor(clearColor.X, clearColor.Y, clearColor.Z, clearColor.W);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Enable(EnableCap.Blend);
@@ -126,17 +131,20 @@ namespace MarioGabeKasper.Engine.Core
             if (args.Time > 0)
             {
                 DebugDraw.Draw();
-                _currentScene.Render();
+                CurrentScene.Render();
             }
             
-            this._frameBuffer.UnBind();
+            this.FrameBuffer.UnBind();
+            #endregion
             
-            ////Update ImGui
-            _currentScene.SceneImGui(_guiController);
-            GameViewWindow.Imgui();
-            _guiController.Render();
-            ImGuiController.CheckGlError("End of frame");
+            ImGui.ShowDemoWindow();
 
+            CurrentScene.SceneImGui(_guiController);
+            _gameViewWindow.Imgui();
+            _guiController.Render();
+            
+            ImGuiController.CheckGlError("End of frame");   
+            
             //Replacing front with back buffer
             SwapBuffers();
         }
@@ -152,12 +160,14 @@ namespace MarioGabeKasper.Engine.Core
             if (KeyboardState.IsKeyDown(Keys.Escape))
                 Close();
 
+            Input.Update();
+            
             endTime = (float)GLFW.GetTime();
             dt = endTime - beginTime;
             beginTime = endTime;
 
             //Update scenes
-            if (dt >= 0) _currentScene.Update(dt, MouseState, KeyboardState);
+            if (dt >= 0) CurrentScene.Update(dt);
 
             base.OnUpdateFrame(e);
         }
@@ -171,16 +181,17 @@ namespace MarioGabeKasper.Engine.Core
         {
             base.OnResize(e);
 
-            _width = ClientSize.X;
-            _height = ClientSize.Y;
+            Width = ClientSize.X;
+            Height = ClientSize.Y;
 
             // Update the opengl viewport
-            GL.Viewport(0, 0, _width,_height);
+            GL.Viewport(0, 0, Width,Height);
 
 
             // Tell ImGui of the new size
             _guiController.WindowResized(ClientSize.X, ClientSize.Y);
         }
+        
 
         /// <summary>
         /// If text is typed also send it to imgui controller
@@ -202,6 +213,7 @@ namespace MarioGabeKasper.Engine.Core
             base.OnMouseWheel(e);
             _guiController.MouseScroll(e.Offset);
         }
+        
 
         /// <summary>
         /// Changing scenes
@@ -209,10 +221,10 @@ namespace MarioGabeKasper.Engine.Core
         /// <param name="scene">new scene</param>
         public void ChangeScene(Scene scene)
         {
-            _currentScene = scene;
-            _currentScene.Load();
-            _currentScene.Init(this);
-            _currentScene.Start();
+            CurrentScene = scene;
+            CurrentScene.Load();
+            CurrentScene.Init(this);
+            CurrentScene.Start();
         }
 
         public void LoadSettings()
@@ -223,51 +235,13 @@ namespace MarioGabeKasper.Engine.Core
                 Settings = settings;
             }
         }
-        
+
         public void SaveSettings()
         {
             string settingsData = JsonConvert.SerializeObject(Settings);
             File.WriteAllText("../../../settings.json", settingsData);
+
         }
 
-
-        /// <summary>
-        /// Get the current scene
-        /// </summary>
-        /// <returns>m_CurrentScene</returns>
-        public static Scene GetScene()
-        {
-            return _currentScene;
-        }
-
-        /// <summary>
-        /// Get the width of the viewport
-        /// </summary>
-        /// <returns>width</returns>
-        public static int GetSizeX()
-        {
-            return _width;
-        }
-
-        /// <summary>
-        /// Get Height of viewport
-        /// </summary>
-        /// <returns>height</returns>
-        public static int GetSizeY()
-        {
-            return _height;
-        }
-        
-
-
-        public FrameBuffer GetFrameBuffer()
-        {
-            return _frameBuffer;
-        }
-
-        public float GetTargetAspectRatio()
-        {
-            return 16.0f / 9.0f;
-        }
     }
 }

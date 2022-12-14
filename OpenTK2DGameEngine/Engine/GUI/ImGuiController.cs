@@ -56,6 +56,7 @@ namespace MarioGabeKasper.Engine.GUI
             ImGui.SetCurrentContext(context);
 
             var io = ImGui.GetIO();
+            
             io.Fonts.AddFontDefault();            
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable; //
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
@@ -220,10 +221,9 @@ void main()
             }
 
             SetPerFrameImGuiData(deltaSeconds);
-            
-            UpdateImGuiInput(wnd);                
-            
+            UpdateImGuiInput(wnd);
             _frameBegun = true;
+            
             ImGui.NewFrame();
             SetupDockspace();
         }
@@ -236,7 +236,7 @@ void main()
             ImGuiWindowFlags windowFlags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking;
 
             ImGui.SetNextWindowPos(new System.Numerics.Vector2(0f,0f), ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new System.Numerics.Vector2(Window.GetSizeX(), Window.GetSizeY()));
+            ImGui.SetNextWindowSize(new System.Numerics.Vector2(Window.Width, Window.Height));
 
             ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
             ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
@@ -282,7 +282,7 @@ void main()
             io.MouseDown[0] = mouseState[MouseButton.Left];
             io.MouseDown[1] = mouseState[MouseButton.Right];
             io.MouseDown[2] = mouseState[MouseButton.Middle];
-
+            
             var screenPoint = new Vector2i((int)mouseState.X, (int)mouseState.Y);
             var point = screenPoint;//wnd.PointToClient(screenPoint);
             io.MousePos = new System.Numerics.Vector2(point.X, point.Y);
@@ -324,6 +324,7 @@ void main()
         private static void SetKeyMappings()
         {
             ImGuiIOPtr io = ImGui.GetIO();
+            
             io.KeyMap[(int)ImGuiKey.Tab] = (int)Keys.Tab;
             io.KeyMap[(int)ImGuiKey.LeftArrow] = (int)Keys.Left;
             io.KeyMap[(int)ImGuiKey.RightArrow] = (int)Keys.Right;
@@ -367,9 +368,12 @@ void main()
             bool prevCullFaceEnabled = GL.GetBoolean(GetPName.CullFace);
             bool prevDepthTestEnabled = GL.GetBoolean(GetPName.DepthTest);
             int prevActiveTexture = GL.GetInteger(GetPName.ActiveTexture);
+            
             GL.ActiveTexture(TextureUnit.Texture0);
+            
             int prevTexture2D = GL.GetInteger(GetPName.TextureBinding2D);
             Span<int> prevScissorBox = stackalloc int[4];
+            
             unsafe
             {
                 fixed (int* iptr = &prevScissorBox[0])

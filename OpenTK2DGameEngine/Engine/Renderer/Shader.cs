@@ -32,7 +32,6 @@ namespace MarioGabeKasper.Engine.Renderer
             vertexId = GL.CreateShader(ShaderType.VertexShader);
             GL.ShaderSource(vertexId, vertexSource);
             GL.CompileShader(vertexId);
-
             GL.GetShader(vertexId, ShaderParameter.CompileStatus, out var succes);
             if (succes != (int)All.True)
             {

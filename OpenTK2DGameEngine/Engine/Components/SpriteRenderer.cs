@@ -1,7 +1,9 @@
-﻿using System.Numerics;
-
+﻿using System;
+using System.Numerics;
+using ImGuiNET;
 using MarioGabeKasper.Engine.Core;
 using MarioGabeKasper.Engine.Renderer;
+using Newtonsoft.Json;
 using OpenTK.Audio.OpenAL.Extensions.SOFT.DeviceClock;
 
 
@@ -16,8 +18,8 @@ namespace MarioGabeKasper.Engine.Components
         private Transform lastTransform;
         public bool IsDirty = true;
         
-        public Texture Texture => Sprite.Texture;
-        public Vector2[] TextureCoords => Sprite.TexCoords;
+        [JsonIgnore]public Texture Texture => Sprite.Texture;
+        [JsonIgnore]public Vector2[] TextureCoords => Sprite.TexCoords;
         
         public SpriteRenderer()
         {
@@ -44,15 +46,25 @@ namespace MarioGabeKasper.Engine.Components
         
         public override void ImGui_()
         {
-            System.Numerics.Vector4 col = new System.Numerics.Vector4(Color.X, Color.Y, Color.Z, Color.W);
+            // System.Numerics.Vector4 col = new System.Numerics.Vector4(Color.X, Color.Y, Color.Z, Color.W);
+            //
+
             
-            if (ImGuiNET.ImGui.ColorPicker4("test", ref col))
+            string[] toIgnore = new[]
             {
-                this.Color = new Vector4(col.X, col.Y, col.Z, col.W);
+                "IsDirty",
+                "Color"
+            };
+            
+            CreateDefaultFieldWindow(toIgnore);
+                
+            ImGui.Text("Texture ID: " + Texture.TexId);
+            
+            if (ImGuiNET.ImGui.ColorPicker4("test", ref Color))
+            {
+                this.Color = new Vector4(Color.X, Color.Y, Color.Z, Color.W);
                 IsDirty = true;
             }
-
-            base.ImGui_();
         }
        
         public sealed override void SetObjectType()

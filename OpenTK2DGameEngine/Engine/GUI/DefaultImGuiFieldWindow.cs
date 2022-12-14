@@ -10,19 +10,28 @@ namespace MarioGabeKasper.Engine.GUI
 {
     public class DefaultImGuiFieldWindow
     {
+
         public void CreateDefaultFieldWindow()
+        {
+            string[] empty = new string[0];
+            CreateDefaultFieldWindow(empty);
+        }
+
+        public void CreateDefaultFieldWindow(string[] fieldsToIgnore)
         {
             FieldInfo[] fields = this.GetType().GetFields(
                                                           BindingFlags.DeclaredOnly
                                                         | BindingFlags.Public
                                                         | BindingFlags.NonPublic
-                                                        | BindingFlags.Instance);
-            foreach (var field in fields)
+                                                        | BindingFlags.Instance); foreach (var field in fields)
             {
                 Type type = field.FieldType;
                 var value = field.GetValue(this);
                 string name = field.Name;
 
+                if (fieldsToIgnore.Contains(name))
+                    return;
+                
                 if (type == typeof(int))
                 {
                     int val = (int)value;
@@ -36,7 +45,8 @@ namespace MarioGabeKasper.Engine.GUI
                 if (type == typeof(float))
                 {
                     float val = (float)value;
-
+                    
+                    
                     if (ImGuiNET.ImGui.DragFloat(name + ": ", ref val))
                     {
                         field.SetValue(this, val);

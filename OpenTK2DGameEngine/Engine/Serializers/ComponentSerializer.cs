@@ -1,7 +1,9 @@
 ﻿using System;
+using Accord.Math.Decompositions;
 using MarioGabeKasper.Engine.Components;
 using MarioGabeKasper.Engine.Core;
 using MarioGabeKasper.Engine.Renderer;
+using MarioGabeKasper.Engine.Sound;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -55,6 +57,8 @@ namespace MarioGabeKasper.Engine.Serializers
                     return JsonConvert.DeserializeObject<Texture>(jo.ToString(), _specifiedSubclassConversion);
                 case 5:
                     return JsonConvert.DeserializeObject<GameObject>(jo.ToString(), _specifiedSubclassConversion);
+                case 8:
+                    return JsonConvert.DeserializeObject<GameEngineSound>(jo.ToString(), _specifiedSubclassConversion);
                 default:
                     throw new Exception();
             }

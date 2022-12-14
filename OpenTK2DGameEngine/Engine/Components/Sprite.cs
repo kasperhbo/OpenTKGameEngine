@@ -1,5 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿
 using MarioGabeKasper.Engine.Renderer;
+using Newtonsoft.Json;
 using OpenTK.Mathematics;
 
 namespace MarioGabeKasper.Engine.Components
@@ -8,12 +9,11 @@ namespace MarioGabeKasper.Engine.Components
     {
         public float Width, Height;
         public Texture Texture = null;
-        public int TextureId
+        [JsonIgnore]public int TextureId
         {
             get
             {
                 return Texture == null ? -1 : Texture.TexId;
-
             }
         }
         

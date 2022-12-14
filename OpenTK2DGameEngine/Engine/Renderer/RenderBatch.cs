@@ -38,11 +38,13 @@ namespace MarioGabeKasper.Engine.Renderer
 
         private int _vaoId, _vboId;
 
-        private int zIndex;
-
+        public bool HasRoom { get; private set; }
+        public bool TextureRoom => textures.Count < 8;
+        public int ZIndex { get; }
+        
         public RenderBatch(int maxBatchSize, Camera camera, int zIndex)
         {
-            this.zIndex = zIndex;
+            this.ZIndex = zIndex;
             _positionOffset = 0;
             _colorOffset = _positionOffset + _positionSize * sizeof(float);
             _texCoorOffset = _colorOffset + _colorSize * sizeof(float);
@@ -66,7 +68,7 @@ namespace MarioGabeKasper.Engine.Renderer
             HasRoom = true;
         }
 
-        public bool HasRoom { get; private set; }
+        
 
         public void Start()
         {
@@ -132,10 +134,10 @@ namespace MarioGabeKasper.Engine.Renderer
             }
 
             _shader.Use();
-
+            
             _shader.UploadMat4F("uProjection", camera.GetProjectionMatrix());
             _shader.UploadMat4F("uView", camera.GetViewMatrix());
-
+            
             for (var i = 0; i < textures.Count; i++)
             {
                 GL.ActiveTexture(TextureUnit.Texture0 + i + 1);
@@ -213,11 +215,11 @@ namespace MarioGabeKasper.Engine.Renderer
                 else if (i == 3)
                     yAdd = 1.0f;
 
-                _vertices[offset] = sprite.GetGameObject().GetTransform().Position.X +
-                                    xAdd * sprite.GetGameObject().GetTransform().Scale.X;
+                _vertices[offset] = sprite.Parent.GetTransform().Position.X +
+                                    xAdd * sprite.Parent.GetTransform().Scale.X;
 
-                _vertices[offset + 1] = sprite.GetGameObject().GetTransform().Position.Y +
-                                        yAdd * sprite.GetGameObject().GetTransform().Scale.Y;
+                _vertices[offset + 1] = sprite.Parent.GetTransform().Position.Y +
+                                        yAdd * sprite.Parent.GetTransform().Scale.Y;
 
                 //Load color
                 _vertices[offset + 2] = color.X;
@@ -263,27 +265,20 @@ namespace MarioGabeKasper.Engine.Renderer
             elements[offsetArrayIndex + 5] = offset + 1;
         }
 
-        public bool HasTextureRoom()
-        {
-            return textures.Count < 8;
-        }
 
         public bool HasTexture(Texture tex)
         {
             return textures.Contains(tex);
         }
 
-        public int GetZIndex()
-        {
-            return this.zIndex;
-        }
+        
 
         public int CompareTo(RenderBatch other)
         {
-            if (this.zIndex < other.zIndex)
+            if (this.ZIndex < other.ZIndex)
                 return -1;
             
-            if (this.zIndex == other.zIndex)
+            if (this.ZIndex == other.ZIndex)
                 return 0;
             
             return 1;

@@ -1,4 +1,5 @@
-﻿using MarioGabeKasper.Engine.Core;
+﻿using System;
+using MarioGabeKasper.Engine.Core;
 using MarioGabeKasper.Engine.GUI;
 using MarioGabeKasper.Engine.Serializers;
 using Newtonsoft.Json;
@@ -8,12 +9,11 @@ namespace MarioGabeKasper.Engine.Components
     [JsonConverter(typeof(ComponentSerializer))]
     public abstract class Component : DefaultImGuiFieldWindow
     {
-        
-        protected static int IdCounter = 0;
         public int Uid = -1;
-        
-        protected GameObject Parent = null;
         public int ObjType = -1;
+        protected static int IdCounter = 0;
+        
+        [JsonIgnore]public GameObject Parent;
         
         public virtual void Start(GameObject gameObject)
         {
@@ -30,17 +30,6 @@ namespace MarioGabeKasper.Engine.Components
         {
             CreateDefaultFieldWindow();
         }
-        
-        
-        public void SetGameObject(GameObject go)
-        {
-            this.Parent = go;
-        }
-        
-        public GameObject GetGameObject()
-        {
-            return Parent;
-        }
 
         public abstract void SetObjectType();
 
@@ -56,7 +45,5 @@ namespace MarioGabeKasper.Engine.Components
         {
             IdCounter = maxId;
         }
-        
-
     }
 }

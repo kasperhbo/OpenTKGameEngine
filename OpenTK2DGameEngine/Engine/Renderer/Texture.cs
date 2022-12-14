@@ -8,11 +8,17 @@ using StbImageSharp;
 namespace MarioGabeKasper.Engine.Renderer
 {
     [JsonConverter(typeof(ComponentSerializer))]
-    public class Texture 
+    public class Texture
     {
-        public string Filepath;
-        public int TexId;
-        public int Width, Height;
+        [JsonProperty]
+        public string Filepath { get; private set; }
+        [JsonProperty]
+        public int    TexId{ get; private set; }
+        [JsonProperty]
+        public int    Width{ get; private set; }
+        [JsonProperty]
+        public int    Height{ get; private set; }
+        
         public int ObjType = 4;
 
         public Texture()
@@ -43,8 +49,7 @@ namespace MarioGabeKasper.Engine.Renderer
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
                 (int)TextureMagFilter.Linear);
             
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, width, height, 0,
-                   PixelFormat.Rgb, PixelType.UnsignedByte, nullPtr);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, width, height, 0,PixelFormat.Rgb, PixelType.UnsignedByte, nullPtr);
         }
 
         public void Init(string filepath)
@@ -114,25 +119,7 @@ namespace MarioGabeKasper.Engine.Renderer
             // Here is an example of mips in action https://en.wikipedia.org/wiki/File:Mipmap_Aliasing_Comparison.png
             // GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
-
-        public int GetWidth() {
-            return this.Width;
-        }
-
-        public int GetHeight() {
-            return this.Height;
-        }
-
-        public string GetFilePath()
-        {
-            return Filepath;
-        }
-
-        public int GetTexId()
-        {
-            return TexId;
-        }
-
+        
         public void Bind()
         {
             GL.BindTexture(TextureTarget.Texture2D, TexId);
@@ -150,10 +137,8 @@ namespace MarioGabeKasper.Engine.Renderer
             if (!(obj is Texture)) return false;
 
             Texture oTex = (Texture) obj;
-            return oTex.GetWidth().Equals(Width) && oTex.GetHeight().Equals(Height) && oTex.GetTexId().Equals(TexId) 
+            return oTex.Width.Equals(Width) && oTex.Height.Equals(Height) && oTex.TexId.Equals(TexId) 
                 && oTex.Filepath.Equals(Filepath);
-            return oTex.GetWidth() == this.Width && oTex.GetHeight() == this.Height && oTex.GetTexId() == this.TexId
-                && oTex.GetFilePath().Equals(this.Filepath);
         }
     }
 }
