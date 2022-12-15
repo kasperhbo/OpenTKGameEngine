@@ -9,6 +9,9 @@ namespace MarioGabeKasper.Engine.Components
     {
         public float Width, Height;
         public Texture Texture = null;
+        
+        public int ObjType = 9;
+        
         [JsonIgnore]public int TextureId
         {
             get
@@ -16,7 +19,7 @@ namespace MarioGabeKasper.Engine.Components
                 return Texture == null ? -1 : Texture.TexId;
             }
         }
-        
+
         public System.Numerics.Vector2[] TexCoords = new[]
         {
             new System.Numerics.Vector2(1, 1),

@@ -26,23 +26,25 @@ namespace MarioGabeKasper.Engine.Core
             this.Transform = transform;
             Uid = _idCounter++;
         }
+        
+        // public Component GetComponent(Type T)
+        // {
+        //     foreach (var component in _components)
+        //     {
+        //         if (T == component.GetType()) return component;
+        //     }
+        //
+        //     return null;
+        // }
 
-        public virtual Component GetComponent<T>(Type componentClass) where T : Component
+        public virtual T GetComponent<T>() where T : Component
         {
-            foreach (var c in Components)
-                if (componentClass.IsAssignableFrom(c.GetType()))
-                    try
-                    {
-                        return c;
-                    }
-                    catch (InvalidCastException e)
-                    {
-                        Console.WriteLine(e.ToString());
-                        Console.Write(e.StackTrace);
-                        Debug.Assert(false, "Error: Casting component.");
-                    }
+            foreach (var component in Components)
+            {
+                if (typeof(T) == component.GetType()) return (component as T)!;
+            }
 
-            return default(T);
+            return null;
         }
 
         public Transform GetTransform()

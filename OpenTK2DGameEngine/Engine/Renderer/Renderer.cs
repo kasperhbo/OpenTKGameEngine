@@ -13,7 +13,7 @@ namespace MarioGabeKasper.Engine.Renderer
 
         public void Add(GameObject go, Camera cam)
         {
-            var spr = (SpriteRenderer)go.GetComponent<SpriteRenderer>(typeof(SpriteRenderer));
+            var spr = (SpriteRenderer)go.GetComponent<SpriteRenderer>();
 
             if (spr != null)
                 Add(spr, cam);

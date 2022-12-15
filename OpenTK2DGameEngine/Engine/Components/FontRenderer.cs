@@ -12,7 +12,7 @@ namespace MarioGabeKasper.Engine.Components
         
         public override void Start(GameObject gameobject)
         {
-            if (Parent.GetComponent<SpriteRenderer>(typeof(SpriteRenderer)) != null)
+            if (Parent.GetComponent<SpriteRenderer>() != null)
                 Console.WriteLine("Found Font Renderer");
 
             base.Start(gameobject);

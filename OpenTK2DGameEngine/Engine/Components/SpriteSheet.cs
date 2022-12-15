@@ -8,7 +8,7 @@ namespace MarioGabeKasper.Engine.Components
     {
         private Texture texture;
         
-        public List<Sprite> sprites;
+        public List<Sprite> sprites = new List<Sprite>();
         public Sprite GetSprite(int index)
         {
             return this.sprites[index];

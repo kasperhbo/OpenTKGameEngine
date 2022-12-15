@@ -14,7 +14,6 @@ namespace MarioGabeKasper
         private static void Main(string[] args) {
             Window.Get();
             
-            //TODO: Find a better place to put this
             ImGui.SaveIniSettingsToDisk("../../../imgui/imgui.ini");
             Window.CurrentScene.SaveScene();
             Window.Get().SaveSettings();

@@ -4,11 +4,9 @@ using MarioGabeKasper.Engine.Components;
 using MarioGabeKasper.Engine.Components.Colliders;
 using MarioGabeKasper.Engine.Core;
 using MarioGabeKasper.Engine.GUI;
-using MarioGabeKasper.Engine.Sound;
 using MarioGabeKasper.Engine.Utils;
-using Window = MarioGabeKasper.Engine.Core.Window;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-
+using Window = MarioGabeKasper.Engine.Core.Window;
 using Vector2 = System.Numerics.Vector2;
 using Vector3 = OpenTK.Mathematics.Vector3;
 
@@ -20,31 +18,20 @@ namespace MarioGabeKasper.Engine.Scenes
         
         GameObject levelEditorStuff = new GameObject("level editor", new Transform(), 0);
         
-        public override void Init(Window window)
+        public override void Init(Window window, string sceneName)
         {
-            base.Init(window);
+            base.Init(window, sceneName);
             LoadResources();
 
             SCamera = new Camera(new Vector3(-250, 0, 0));
             
-            sprites = AssetPool.GetSpriteSheet("decorationsandblocks.png");
+            sprites = AssetPool.GetSpriteSheet("EngineResources/Textures/decorationsandblocks.png");
             
             levelEditorStuff.AddComponent(new MouseControls());
             levelEditorStuff.AddComponent(new GridLines());
-            
-            levelEditorStuff.AddComponent(new GameEngineSound());
-            GameEngineSound s = (GameEngineSound)levelEditorStuff.GetComponent<GameEngineSound>(typeof(GameEngineSound));
-            
-            s.SetAudioFile("../../../Resources/drums.wav");
-            s.Play();
 
-            Window.Get().KeyDown += args =>
-            {
-                if(args.Key == Keys.B)
-                    s.PlayPause();
-            };
-            
-            PActiveGameObject = GameObjects[0];
+            if(GameObjects.Count > 0)
+                PActiveGameObject = GameObjects[0];
         }
 
         /// <summary>
@@ -53,14 +40,15 @@ namespace MarioGabeKasper.Engine.Scenes
         private void LoadResources()
         {
             AssetPool.GetShader(new ShaderSource("../../../default.vert", "../../../default.frag"));
+            AssetPool.GetShader(new ShaderSource("../../../default.vert", "../../../default.frag"));
             //SpriteSheet file, sprite width, sprite height, num of sprites, spacing
-            AssetPool.AddSpriteSheet("decorationsandblocks.png",
-            new SpriteSheet(AssetPool.GetTexture("decorationsandblocks.png"),
-                16, 16, 81, 0
-            ));
+            AssetPool.AddSpriteSheet("EngineResources/Textures/decorationsandblocks.png",
+                new SpriteSheet(AssetPool.GetTexture("EngineResources/Textures/decorationsandblocks.png"),
+                    16, 16, 81, 0
+                ));
         
-            AssetPool.GetTexture("blendImage1.png");
-            AssetPool.GetTexture("mario.png");
+            AssetPool.GetTexture("EngineResources/Textures/blendImage1.png");
+            AssetPool.GetTexture("EngineResources/Textures/mario.png");
         }
         
         /// <summary>
@@ -193,14 +181,19 @@ namespace MarioGabeKasper.Engine.Scenes
             Renderer.Render();
         }
 
+        private ContentBrowserPanel contentBrowserPanel = new ContentBrowserPanel();
+        
         /// <summary>
         /// ImGui Control
         /// </summary>
         /// <param name="imGuiController"></param>
-        public override void ImGui(ImGuiController imGuiController)
+        string newSceneName = "";
+        
+        public override void ImGui_(ImGuiController imGuiController)
         {
-            base.ImGui(imGuiController);
-            
+            base.ImGui_(imGuiController);
+           
+            contentBrowserPanel.ImGui_();
             //Asset browser imgui
             AssetBrowser();
             
@@ -212,8 +205,79 @@ namespace MarioGabeKasper.Engine.Scenes
             
             //Uppdate the imgui window for the camera
             SCamera.ImGui(imGuiController);
+
+            MenuBarImGui();
         }
 
+        private void MenuBarImGui()
+        {
+            bool openpopuptemp = false;
+            if (ImGui.BeginMenuBar())
+            {
+                if (ImGui.BeginMenu("File"))
+                {
+                    if (ImGui.MenuItem("New Project"))
+                    {
+                        Console.WriteLine("Implemnt here creating a new project");
+                    }
+
+                    if (ImGui.MenuItem("Load Project"))
+                    {
+                        Console.WriteLine("Implement here loading projects");
+                    }
+
+                    if (ImGui.MenuItem("Save Scene"))
+                    {
+                        Console.WriteLine("Save the current scene");
+                        Window.CurrentScene.SaveScene();
+                    }
+
+                    if (ImGui.MenuItem("Save Scene As"))
+                    {
+
+                    }
+
+                    if (ImGui.MenuItem("New Scene"))
+                    {
+                        openpopuptemp = true;
+                    }
+
+                    ImGui.EndMenu();
+                }
+
+                CreateNewSceneImGui(openpopuptemp);
+                
+                ImGui.EndMenuBar();
+            }
+        }
+
+
+        private void CreateNewSceneImGui(bool openpopuptemp)
+        {
+            if (openpopuptemp == true) {
+                ImGui.OpenPopup("popup");
+                openpopuptemp = false;
+            }
+            
+            if (ImGui.BeginPopupModal("popup")){
+                ImGui.Text("Create a new scene");
+                    
+                ImGui.InputText("Scene name", ref newSceneName, 16);
+
+                if (ImGui.Button("Cancel"))
+                {
+                    ImGui.CloseCurrentPopup();
+                };
+                ImGui.SameLine();
+                if (ImGui.Button("Create"))
+                {
+                    Window.Get().ChangeScene(new LevelEditorScene(), newSceneName + ".scene");
+                }
+                    
+                    
+                ImGui.EndPopup();
+            }
+        }
         private void ActiveGameobjectImGui()
         {
             if(PActiveGameObject != null)
@@ -258,7 +322,23 @@ namespace MarioGabeKasper.Engine.Scenes
             
             ImGuiNET.ImGui.End();
         }
-        
+
+        private bool IsInScreen(Vector2 windowSize)
+        {
+            Vector2 topLeft = ImGuiNET.ImGui.GetCursorScreenPos();            
+            
+            topLeft.X -= ImGuiNET.ImGui.GetScrollX();
+            topLeft.X -= ImGuiNET.ImGui.GetScrollY();
+            
+            float leftX = topLeft.X;
+            float bottomY = topLeft.Y;
+            float rightX = topLeft.X + windowSize.X;
+            float topY = topLeft.Y + windowSize.Y;
+            
+            return Input.MousePosition.X >= leftX && Input.MousePosition.X <= rightX &&
+                   Input.MousePosition.Y >= bottomY && Input.MousePosition.Y <= topY;   
+        }
+
         /// <summary>
         /// Asset Browser ImGui Window
         /// </summary>
@@ -290,7 +370,7 @@ namespace MarioGabeKasper.Engine.Scenes
                         new Vector2(texCoords[0].X, texCoords[2].Y)))
                 {
                     GameObject obj = Prefabs.GenerateSpriteObject(sprite, 32, 32);
-                    var mouseGO = (MouseControls)levelEditorStuff.GetComponent<MouseControls>(typeof(MouseControls));
+                    var mouseGO = (MouseControls)levelEditorStuff.GetComponent<MouseControls>();
                     mouseGO.PickupObject(obj);
                 }
             
@@ -307,7 +387,6 @@ namespace MarioGabeKasper.Engine.Scenes
                 }
             
             }
-            
             ImGuiNET.ImGui.End();
         }
         
@@ -334,3 +413,4 @@ namespace MarioGabeKasper.Engine.Scenes
         }
     }
 }
+

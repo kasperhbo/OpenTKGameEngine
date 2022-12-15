@@ -32,5 +32,10 @@ namespace MarioGabeKasper.Engine.Core
         /// </summary>
         public float SceneCameraSpeedMultiplier = 1;
 
+        /// <summary>
+        /// Scene
+        /// </summary>
+        public string lastOpenedScenePath = "Level01.scene";
+
     }
 }

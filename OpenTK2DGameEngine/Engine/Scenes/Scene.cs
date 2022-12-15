@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using MarioGabeKasper.Engine.Components;
 using MarioGabeKasper.Engine.Core;
 using MarioGabeKasper.Engine.GUI;
@@ -18,11 +19,11 @@ namespace MarioGabeKasper.Engine
         
         protected GameObject PActiveGameObject = null;
 
-        public virtual void Init(Window window)
-        { 
+        public string CurrentSceneName = "test01.scene";
 
-            
-            // p_mouseListener = mouseListener;
+        public virtual void Init(Window window, string currentSceneName)
+        {
+            this.CurrentSceneName = currentSceneName;
         }
 
         public void Start()
@@ -55,11 +56,11 @@ namespace MarioGabeKasper.Engine
         public virtual void SceneImGui(ImGuiController imGuiController)
         {
             //Update level editor scene imgui
-            ImGui(imGuiController);
+            ImGui_(imGuiController);
         }
 
         
-        public virtual void ImGui(ImGuiController imGuiController)
+        public virtual void ImGui_(ImGuiController imGuiController)
         {
             
         }
@@ -67,11 +68,13 @@ namespace MarioGabeKasper.Engine
         /// <summary>
         /// Load the data of the scene
         /// </summary>
-        public void Load()
+        public void LoadScene(string SceneToOpen)
         {
-            if(File.Exists("../../../data.json"))
+            SceneToOpen = "Resources/Scenes/" + SceneToOpen;
+            
+            if(File.Exists(SceneToOpen)) 
             {
-                List<GameObject> objs = JsonConvert.DeserializeObject<List<GameObject>>(File.ReadAllText("../../../data.json"));
+                List<GameObject> objs = JsonConvert.DeserializeObject<List<GameObject>>(File.ReadAllText(SceneToOpen));
 
                 int maxGoid = -1;
                 int maxCompId = -1;
@@ -108,9 +111,20 @@ namespace MarioGabeKasper.Engine
         public void SaveScene()
         {
             string sceneData = JsonConvert.SerializeObject(GameObjects.ToArray());
-            File.WriteAllText("../../../data.json", sceneData);
-        }
-        
-
+            string path = "Resources/Scenes/" + CurrentSceneName;
+            
+            if (File.Exists(path))
+            {
+                File.WriteAllText( path, sceneData);
+            }
+            else
+            {
+                using (FileStream fs = File.Create(path))
+                {
+                    fs.Close();
+                }
+                File.WriteAllText(path, sceneData);
+            }
+        } 
     }
 }

@@ -46,10 +46,6 @@ namespace MarioGabeKasper.Engine.Components
         
         public override void ImGui_()
         {
-            // System.Numerics.Vector4 col = new System.Numerics.Vector4(Color.X, Color.Y, Color.Z, Color.W);
-            //
-
-            
             string[] toIgnore = new[]
             {
                 "IsDirty",
@@ -58,7 +54,8 @@ namespace MarioGabeKasper.Engine.Components
             
             CreateDefaultFieldWindow(toIgnore);
                 
-            ImGui.Text("Texture ID: " + Texture.TexId);
+            if(Texture != null)
+                ImGui.Text("Texture ID: " + Texture.TexId);
             
             if (ImGuiNET.ImGui.ColorPicker4("test", ref Color))
             {

@@ -19,23 +19,17 @@ namespace MarioGabeKasper.Engine.Core
     public class Window : GameWindow
     {
         public static Scene CurrentScene { get; private set; }
-
+        
         private float beginTime = (float)GLFW.GetTime();
         private float dt = -1.0f;
         private float endTime;
         
         public float TargetAspectRatio =>  16.0f / 9.0f;
-
         private Vector4 clearColor;
-
-        
         private ImGuiController _guiController;
-        public Settings Settings;
-        
+        public Settings Settings;        
         public FrameBuffer FrameBuffer { get; private set; }
-
         private static Window _sWindow = null;
-
         public static int Width { get; private set; }
         public static int Height { get; private set; }
 
@@ -102,7 +96,7 @@ namespace MarioGabeKasper.Engine.Core
             Input.Initialize(this);
             
             //Open the Level Editor Scene
-            ChangeScene(new LevelEditorScene());
+            ChangeScene(new LevelEditorScene(), Window.Get().Settings.lastOpenedScenePath);
         }
 
         /// <summary>
@@ -219,11 +213,11 @@ namespace MarioGabeKasper.Engine.Core
         /// Changing scenes
         /// </summary>
         /// <param name="scene">new scene</param>
-        public void ChangeScene(Scene scene)
+        public void ChangeScene(Scene scene, string sceneDataPath)
         {
             CurrentScene = scene;
-            CurrentScene.Load();
-            CurrentScene.Init(this);
+            CurrentScene.LoadScene(sceneDataPath);
+            CurrentScene.Init(this, sceneDataPath);
             CurrentScene.Start();
         }
 
@@ -240,7 +234,6 @@ namespace MarioGabeKasper.Engine.Core
         {
             string settingsData = JsonConvert.SerializeObject(Settings);
             File.WriteAllText("../../../settings.json", settingsData);
-
         }
 
     }

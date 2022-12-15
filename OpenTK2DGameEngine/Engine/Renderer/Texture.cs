@@ -10,15 +10,11 @@ namespace MarioGabeKasper.Engine.Renderer
     [JsonConverter(typeof(ComponentSerializer))]
     public class Texture
     {
-        [JsonProperty]
-        public string Filepath { get; private set; }
-        [JsonProperty]
-        public int    TexId{ get; private set; }
-        [JsonProperty]
-        public int    Width{ get; private set; }
-        [JsonProperty]
-        public int    Height{ get; private set; }
-        
+        [JsonProperty]public string Filepath { get; private set; }
+        [JsonProperty]public int    TexId    {get; private set; }
+        [JsonProperty]public int    Width    {get; private set; }
+        [JsonProperty]public int    Height{ get; private set; }
+
         public int ObjType = 4;
 
         public Texture()
@@ -54,7 +50,12 @@ namespace MarioGabeKasper.Engine.Renderer
 
         public void Init(string filepath)
         { 
-            this.Filepath = filepath;
+            Init(filepath, true);
+        }
+
+        public void Init(string filePath, bool flipped)
+        {
+            this.Filepath = filePath;
 
             // Generate handle
             TexId = GL.GenTexture();
@@ -67,16 +68,23 @@ namespace MarioGabeKasper.Engine.Renderer
 
             // OpenGL has it's texture origin in the lower left corner instead of the top left corner,
             // so we tell StbImageSharp to flip the image when loading.
-            StbImage.stbi_set_flip_vertically_on_load(1);
+            if(flipped)
+                StbImage.stbi_set_flip_vertically_on_load(1);
+            else
+                StbImage.stbi_set_flip_vertically_on_load(0);
+            
 
             
             // Here we open a stream to the file and pass it to StbImageSharp to load.
-            using (Stream stream = File.OpenRead(filepath))
+            using (Stream stream = File.OpenRead(filePath))
             {
-                var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
-
-                this.Width = image.Width;
-                this.Height = image.Height;
+                //TODO:SAVE IMAGE DATA INSTEAD OF IMAGE PATH!
+                var imageL = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+                
+                // image = imageL.Data;
+                
+                this.Width = imageL.Width;
+                this.Height = imageL.Height;
 
                 // Now that our pixels are prepared, it's time to generate a texture. We do this with GL.TexImage2D.
                 // Arguments:
@@ -89,8 +97,8 @@ namespace MarioGabeKasper.Engine.Renderer
                 //   The format of the pixels, explained above. Since we loaded the pixels as ARGB earlier, we need to use BGRA.
                 //   Data type of the pixels.
                 //   And finally, the actual pixels.
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, image.Width, image.Height, 0,
-                    PixelFormat.Rgba, PixelType.UnsignedByte, image.Data);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, imageL.Width, imageL.Height, 0,
+                    PixelFormat.Rgba, PixelType.UnsignedByte, imageL.Data);
             }
 
             // Now that our texture is loaded, we can set a few settings to affect how the image appears on rendering.

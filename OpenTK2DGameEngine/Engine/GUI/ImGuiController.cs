@@ -67,8 +67,23 @@ namespace MarioGabeKasper.Engine.GUI
 
             SetPerFrameImGuiData(1f / 60f);
             
+            ChooseStyle("");
+            
             ImGui.NewFrame();   
             _frameBegun = true;
+        }
+
+        private void ChooseStyle(string choosenStyle)
+        {
+            switch (choosenStyle)
+            {
+                case "Default Grey":
+                    StyleGrey.GetStyle();
+                    break;
+                default:
+                    StyleGrey.GetStyle();
+                    break;
+            }
         }
 
         public void WindowResized(int width, int height)

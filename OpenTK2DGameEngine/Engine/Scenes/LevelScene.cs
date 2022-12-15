@@ -7,9 +7,9 @@ namespace MarioGabeKasper.Engine.Scenes
 {
     public class LevelScene : Scene
     {
-        public override void Init(Window window)
+        public override void Init(Window window, string sceneName)
         {
-            base.Init(window);
+            base.Init(window, sceneName);
         }
 
         public override void Update(float dt)

@@ -17,7 +17,8 @@ namespace MarioGabeKasper.Engine.Serializers
             if ((
                     typeof(Component).IsAssignableFrom(objectType) ||
                     typeof(Texture).IsAssignableFrom(objectType) ||
-                    typeof(GameObject).IsAssignableFrom(objectType))
+                    typeof(GameObject).IsAssignableFrom(objectType)) ||
+                    typeof(Sprite).IsAssignableFrom(objectType)
                     && !objectType.IsAbstract)
             {
                 return null;
@@ -36,7 +37,7 @@ namespace MarioGabeKasper.Engine.Serializers
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(Component) || objectType == typeof(Texture);
+            return objectType == typeof(Component) || objectType == typeof(Texture) || objectType == typeof(Sprite) || objectType == typeof(GameObject);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -59,6 +60,8 @@ namespace MarioGabeKasper.Engine.Serializers
                     return JsonConvert.DeserializeObject<GameObject>(jo.ToString(), _specifiedSubclassConversion);
                 case 8:
                     return JsonConvert.DeserializeObject<GameEngineSound>(jo.ToString(), _specifiedSubclassConversion);
+                case 9:
+                    return JsonConvert.DeserializeObject<Sprite>(jo.ToString(), _specifiedSubclassConversion);
                 default:
                     throw new Exception();
             }

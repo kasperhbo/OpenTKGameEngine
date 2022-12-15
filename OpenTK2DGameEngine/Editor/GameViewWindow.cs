@@ -1,8 +1,12 @@
 ﻿using ImGuiNET;
 using MarioGabeKasper.Engine.Core;
 using System;
+using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using MarioGabeKasper.Engine;
+using MarioGabeKasper.Engine.GUI.ImGuiExtras;
+using MarioGabeKasper.Engine.Scenes;
 
 namespace MarioGabeKasper.Editor
 {
@@ -11,63 +15,78 @@ namespace MarioGabeKasper.Editor
         private static bool isPlaying = false;
 
         private static float leftX, rightX, topY, bottomY;
+        bool open = false;
         
         public void Imgui()
         {
-            if (ImGui.BeginMenuBar())
-                                    {
-                                        if (ImGui.BeginMenu("File"))
-                                        {
-                                            ImGui.MenuItem("New Project");
-                                            ImGui.MenuItem("Load Project");
-                                            ImGui.MenuItem("Save Scene");
-                                            ImGui.EndMenu();
-                                        }
-                                        ImGui.EndMenuBar();
-                                    }
-                                    
-                                    ImGui.Begin("Game Viewport", 
-                                        ImGuiWindowFlags.NoScrollbar 
-                                        | ImGuiWindowFlags.NoScrollWithMouse 
-                                        | ImGuiWindowFlags.MenuBar 
-                                        | ImGuiWindowFlags.NoResize
-                                        | ImGuiWindowFlags.NoCollapse
-                                        | ImGuiWindowFlags.NoTitleBar);
-                        
-                                    if(ImGui.BeginMenuBar()){
-                                        if (ImGui.MenuItem("Play", "", isPlaying, !isPlaying))
-                                        {
-                                            
-                                        }
-                                        if (ImGui.MenuItem("Stop", "", !isPlaying, isPlaying))
-                                        {
-                                            
-                                        }
-                                        ImGui.SetNextItemWidth(300 + 2);
-                                        
-                                        
-                                        ImGuiNET.ImGui.SliderFloat("Camera multiplier ", ref Window.Get().Settings.SceneCameraSpeedMultiplier, 1F, 8F);
-                                        
-                                        ImGui.EndMenuBar();
-                                    }
-                                    
-                                    Vector2 windowSize = GetLargestSizeForViewport();
-                                    Vector2 windowPos = GetCenteredPosForViewport(windowSize);
-                                    ImGui.SetCursorPos(new Vector2(windowPos.X, windowPos.Y));
-                        
-                                    Vector2 topLeft = ImGui.GetCursorScreenPos();
-                                    topLeft.X -= ImGui.GetScrollX();
-                                    topLeft.Y -= ImGui.GetScrollY();
-                                    
-                                    leftX = topLeft.X;
-                                    bottomY = topLeft.Y;
-                                    rightX = topLeft.X + windowSize.X;
-                                    topY = topLeft.Y + windowSize.Y;
-                        
-                                    IntPtr textureId = new IntPtr(Window.Get().FrameBuffer.TextureID);
-                                    ImGui.Image(textureId, new Vector2(windowSize.X, windowSize.Y), new Vector2(0,1), new Vector2(1,0));
-                        
-                                    ImGui.End();
+            ImGui.Begin("Game Viewport", 
+                ImGuiWindowFlags.NoScrollbar 
+                | ImGuiWindowFlags.NoScrollWithMouse 
+                | ImGuiWindowFlags.MenuBar 
+                | ImGuiWindowFlags.NoResize
+                | ImGuiWindowFlags.NoCollapse
+                | ImGuiWindowFlags.NoTitleBar);
+            
+            if(ImGui.BeginMenuBar()){
+                if (ImGui.MenuItem("Play", "", isPlaying, !isPlaying))
+                {
+                    
+                }
+                if (ImGui.MenuItem("Stop", "", !isPlaying, isPlaying))
+                {
+                    
+                }
+                ImGui.SetNextItemWidth(300 + 2);
+                
+                ImGuiNET.ImGui.SliderFloat("Camera multiplier ", ref Window.Get().Settings.SceneCameraSpeedMultiplier, 1F, 8F);
+                
+                ImGui.EndMenuBar();
+            }
+            
+            Vector2 windowSize = GetLargestSizeForViewport();
+            Vector2 windowPos = GetCenteredPosForViewport(windowSize);
+            ImGui.SetCursorPos(new Vector2(windowPos.X, windowPos.Y));
+
+            Vector2 topLeft = ImGui.GetCursorScreenPos();
+            topLeft.X -= ImGui.GetScrollX();
+            topLeft.Y -= ImGui.GetScrollY();
+            
+            leftX = topLeft.X;
+            bottomY = topLeft.Y;
+            rightX = topLeft.X + windowSize.X;
+            topY = topLeft.Y + windowSize.Y;
+
+            IntPtr textureId = new IntPtr(Window.Get().FrameBuffer.TextureID);
+            ImGui.Image(textureId, new Vector2(windowSize.X, windowSize.Y), new Vector2(0,1), new Vector2(1,0));
+
+            if (ImGui.BeginDragDropTarget())
+            {
+                ImGuiPayloadPtr payload = ImGui.AcceptDragDropPayload("File_Drop");
+                if (payload.IsValid())
+                {
+                    string filename = (string) GCHandle.FromIntPtr(payload.Data).Target;
+                    Console.WriteLine(filename);
+                }
+                ImGui.EndDragDropTarget();
+            }
+
+            if (ImGui.BeginDragDropTarget())
+            {
+                ImGuiPayloadPtr payload = ImGui.AcceptDragDropPayload("Scene_Drop");
+                if (payload.IsValid())
+                {
+                    string filename = (string)GCHandle.FromIntPtr(payload.Data).Target;
+                    Console.WriteLine("Opening scene: " + filename);
+                    Window.Get().ChangeScene(new LevelEditorScene(), filename);
+                }
+
+                ImGui.EndDragDropTarget();
+            }
+          
+            ImGui.End();
+
+
+
         }
 
         public static bool GetWantCaptureMouse()
@@ -78,6 +97,11 @@ namespace MarioGabeKasper.Editor
 
         }
 
+        private void OpenTextFile(string filePath)
+        {
+            Process.Start("notepad.exe", filePath);
+        }
+        
         public void DrawSlider(int x, int y, int width, int height, float min, float max, ref float value, string label = "")
         {
             ImGui.SetNextItemWidth(width + 2);
